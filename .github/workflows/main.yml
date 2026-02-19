@@ -1,0 +1,42 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: main-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-backend:
+    name: Test Backend
+    uses: ./.github/workflows/main-test-backend.yml
+    secrets: inherit
+
+  build-backend:
+    name: Build Backend
+    needs: [test-backend]
+    uses: ./.github/workflows/main-build-backend.yml
+
+  build-frontend:
+    name: Build Frontend
+    uses: ./.github/workflows/main-build-frontend.yml
+
+  docker-backend:
+    name: Docker Backend
+    needs: [build-backend]
+    uses: ./.github/workflows/main-docker-backend.yml
+    secrets: inherit
+
+  docker-frontend:
+    name: Docker Frontend
+    needs: [build-frontend]
+    uses: ./.github/workflows/main-docker-frontend.yml
+    secrets: inherit
+
+  deploy:
+    name: Deploy to VPS
+    needs: [docker-backend, docker-frontend]
+    uses: ./.github/workflows/main-deploy-vps.yml
+    secrets: inherit

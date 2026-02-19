@@ -86,6 +86,8 @@ services:
     restart: unless-stopped
     environment:
       VITE_API_BASE_URL: https://${API_DOMAIN}
+      NITRO_PORT: 3000
+      NITRO_HOST: 0.0.0.0
     depends_on:
       api:
         condition: service_healthy

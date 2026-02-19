@@ -1,0 +1,67 @@
+name: Deploy to VPS
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Create .env and deploy
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            set -e
+
+            DEPLOY_DIR="/home/${{ secrets.VPS_USER }}/cyberguardian/applications/main"
+            mkdir -p "$DEPLOY_DIR"
+
+            cat > "$DEPLOY_DIR/.env" << 'ENVEOF'
+          DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+
+          DB_USER=cyberguardian
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_DATABASE=cyberguardian
+          DATABASE_URL=postgresql://cyberguardian:${{ secrets.DB_PASSWORD }}@database:5432/cyberguardian
+
+          JWT_PRIVATE_KEY=${{ secrets.JWT_PRIVATE_KEY }}
+          JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}
+          COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}
+          COOKIE_DOMAIN=.maiyu.com.br
+
+          ADMINISTRATOR_PHONE=${{ secrets.ADMINISTRATOR_PHONE }}
+          ADMINISTRATOR_PASSWORD=${{ secrets.ADMINISTRATOR_PASSWORD }}
+          ADMINISTRATOR_NAME=${{ secrets.ADMINISTRATOR_NAME }}
+
+          API_DOMAIN=cyber-api.maiyu.com.br
+          APP_DOMAIN=cyber.maiyu.com.br
+          ENVEOF
+
+          ENDSSH
+
+      - name: Copy docker-compose and deploy
+        run: |
+          scp docker-compose.production.yml ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/cyberguardian/applications/main/docker-compose.production.yml
+
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            set -e
+            cd /home/${{ secrets.VPS_USER }}/cyberguardian/applications/main
+
+            docker compose -f docker-compose.production.yml pull
+            docker compose -f docker-compose.production.yml up -d --force-recreate
+
+            echo "Waiting for services to be healthy..."
+            sleep 10
+            docker compose -f docker-compose.production.yml ps
+          ENDSSH
