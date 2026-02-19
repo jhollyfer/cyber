@@ -12,7 +12,6 @@ jobs:
   test-backend:
     name: Test Backend
     uses: ./.github/workflows/main-test-backend.yml
-    secrets: inherit
 
   build-backend:
     name: Build Backend
@@ -27,16 +26,32 @@ jobs:
     name: Docker Backend
     needs: [build-backend]
     uses: ./.github/workflows/main-docker-backend.yml
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   docker-frontend:
     name: Docker Frontend
     needs: [build-frontend]
     uses: ./.github/workflows/main-docker-frontend.yml
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     name: Deploy to VPS
     needs: [docker-backend, docker-frontend]
     uses: ./.github/workflows/main-deploy-vps.yml
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+      ADMINISTRATOR_PHONE: ${{ secrets.ADMINISTRATOR_PHONE }}
+      ADMINISTRATOR_PASSWORD: ${{ secrets.ADMINISTRATOR_PASSWORD }}
+      ADMINISTRATOR_NAME: ${{ secrets.ADMINISTRATOR_NAME }}

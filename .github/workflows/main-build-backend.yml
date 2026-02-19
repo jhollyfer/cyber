@@ -20,19 +20,27 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
-        working-directory: backend
-        run: npm ci
+        working-directory: ./backend
+        run: npm install
 
       - name: Generate Prisma client
-        working-directory: backend
+        working-directory: ./backend
         run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
 
       - name: Build
-        working-directory: backend
+        working-directory: ./backend
         run: npm run build
 
+      - name: Copy scalar standalone
+        working-directory: ./backend
+        run: |
+          mkdir -p build/dist/js
+          cp node_modules/@scalar/fastify-api-reference/dist/js/standalone.js build/dist/js/
+
       - name: Prune dev dependencies
-        working-directory: backend
+        working-directory: ./backend
         run: npm prune --production
 
       - name: Upload artifact

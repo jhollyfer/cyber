@@ -8,21 +8,6 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: cyberguardian_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U test -d cyberguardian_test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,25 +21,27 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: npm ci
+        run: npm install
 
       - name: Generate Prisma client
         working-directory: backend
         run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
 
       - name: Run unit tests
         working-directory: backend
-        run: npm run test:unit
+        run: npm run test:unit -- --run
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/cyberguardian_test
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
           DB_HOST: localhost
           DB_PORT: 5432
-          DB_USER: test
-          DB_PASSWORD: test
-          DB_DATABASE: cyberguardian_test
+          DB_USER: dummy
+          DB_PASSWORD: dummy
+          DB_DATABASE: dummy
           NODE_ENV: test
-          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
-          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          JWT_PRIVATE_KEY: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMFRKbFRyWG1TelRtMENXSGNkNmpxN2ZGcDZKQ0dSYUdLR2twejhPRVFJaUlaTEh0CnRhTFYxSE90VXRTL0R5dExwZ2QzYUVNZGhRbTVOak1FTmMxdThHMGFWb3lRUVAzSkVNNjlmUHdFZVBvZlROYUYKUHRTNUFEYmtPUmZHSVFhbE55Y3FQSUFMcGIwYkpSRGVhMnhVU0RiVnc4ZWNCK2hENVJER0VLbE95MnphNDRUdQpVMjRKbXN6TGJvaTdVTHN1THNITnk5TGowVlBacE0reVV6UUpMa3NHRFBiQ0w5aHhwcEhNWjR0WWhkZmJLMkZLCm1mZGtxMXI3a3F5bGt2b1JmOFZUWmVGTGJMU3pVN0s5TFAxTkM3QlJCYjdTZXlKVUZMRUpHTHdNTHBpRGlIcHEKWHlNdjVDekJmZkdjNkpSV1RtVUV1MVRkZS9IOW9mTGZRMVpqMXdJREFRQUJBb0lCQUFZT3hPMEtRSkhESXBxNwpIS0lFTkF0RWJGSlVqNmlQL0VNYjFIUlI5RW1DZ3o5WUNRTHBLM1VYcG5VZ1gxbC9CQ0Q0OUdmdmFIRzVjVjg3CnRXRkFtdWJ2R0FLa2ZGV0doYURDZ2pjWTk3U09YVkdHRW10U0dsWVRpeHcwdk12cldITUdySmpDaXpvS2tNdzUKVFdNV3hMcTIvS3pPVHJ3S0doZkxTbmpKZVFGK2xnYkx6cjIyY1hQUkkyR0xpb2o4aWJNYkdRNkFaVk9lUzE2ZApHRVB3OVR1Z2ZqVERERTg3MXdBbEpKR3FxZW5DUVlKaGNTVFovYnhHWlBCWklKNXBtZ3JVQU9CeEN3WFVYRXdWClp5RHNvcWdKMEhPK2NEMW1pbTJDSk5TVE9UVHV6ZHl1Szk4YStRcWk4bTVuZUhXQlIwQjY0RnFLVDcwMmFvN2IKamdOT3dNRUNnWUVBN3FrWWNGaHlQU0RIR0F1bEdhckRBRVdFYlEzY2FWRG1rb1ppQTZBVXdVWXcvMVFSQXdnSwpUVnd5OE5pK0dQMDNqbE1Yb2RHZ1BtNHRZZ0VNNTRna2dBVWpYcjlOYnEvckhBSlJLUFR3bTBDTFIwQ0VwU0dTClMreFc4RkJ6bXFMVlErVjVFbmhLSXllTjBaYnBUbzBvRWJRYlR0Vmc5cjFlMzIrTXRMbDlHbWNDZ1lFQTRKQUIKYnBXK0N6U2YzQjhCMFhrN09PSGY4aUNmSU5acS9lQXcwZXJ2Q0w1UVdBT25hY2RtNEhFN1J3cHNhWHVqa2xybgpaM1p6Z2tMRkpFTWxJUTJiZzFpMFF6Q0Jja2hyVHNZTnRaa0VIR2JXRXdmSlRBOG5TTCtPWmF3eENvaHFQNUV4ClZ3cm1UVWRSVk4vRi9YZitqWVJPd2FMSDhZMmMyKzUzMmpCS0Z3RUNnWUVBaEhaNitZcUtmZjZwWmtuUjBMR28KdWtCcDNFejR4MWN5U2ZFVWZEdERzYVRrcjR2YjhNM09wcTlCTGtQakwyVloxaUx3ZjJWS09LRWE5SkxuL0ZMWAo0U0R0UUcrT2UvcHhKcVRPUEUxVW1MdXF5THBvZUpKNUVhOWJxcTBDcWRYVmRLUzBzalZRNjZYNWVPTmdqYWtzCm85UVFkN3hDalY3Tmk5OHRpOVVCOWE4Q2dZQTBocFJiK0hOUEdEL3E0WnYreWRRalBuZ0VMaUVYMkNSd1ZxWnUKQmhHRWVSN3lRVEwvR0Mrb2lUVTJOR0FWemxZTFlhYmFrZjdlaVVDOXJMZ1BZaXFRRjU2UHM5Q2VVa0F3WVBlcgpLanlRSnN5NjhNNDRYQXN4MDJQL2o3b2x5c0gyN2ZFZ2hSVnVZRnRhaXN3SlVJNlJMbldsOGRRQWw5ZXlvYjI4CmRFNUFBUUtCZ0RMMWVDb0x5cDFGMVZWUHhRNllJTWVxeTR0L01Wa2pEb1FTY1NhUFdka2xhcVcxRlZlZWF3TlgKSUxWVmxwa1NNd09RZnFWMHpod2txYW5EZGpPTjJRYVlHUzJXNnVQT0czWEdSSVJVSWNTUEVyaUhxU1ZneFVPQQpKV2l3TC9Ndkl2UkdQMFZkSjR6VnhiUXRHeWRZMjJ5QjVvZFI0VDlQd2RmdjhIVXdZbzhjCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+          JWT_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwVEpsVHJYbVN6VG0wQ1dIY2Q2agpxN2ZGcDZKQ0dSYUdLR2twejhPRVFJaUlaTEh0dGFMVjFIT3RVdFMvRHl0THBnZDNhRU1kaFFtNU5qTUVOYzF1CjhHMGFWb3lRUVAzSkVNNjlmUHdFZVBvZlROYUZQdFM1QURia09SZkdJUWFsTnljcVBJQUxwYjBiSlJEZWEyeFUKU0RiVnc4ZWNCK2hENVJER0VLbE95MnphNDRUdVUyNEptc3pMYm9pN1VMc3VMc0hOeTlMajBWUFpwTSt5VXpRSgpMa3NHRFBiQ0w5aHhwcEhNWjR0WWhkZmJLMkZLbWZka3Excjdrcnlsa3ZvUmY4VlRaZUZMYkxTelU3SzlMUDFOCkM3QlJCYjdTZXlKVUZMRUpHTHdNTHBpRGlIcHFYeU12NUN6QmZmR2M2SlJXVG1VRXVMVGRFL0g5b2ZMZlExWmoKMXdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==
           COOKIE_SECRET: ci-cookie-secret
           SERVER_URL: http://localhost:4000
           CLIENT_URL: http://localhost:3000
