@@ -4,7 +4,6 @@ import { loadControllers } from '@application/core/controllers';
 import { registerDependencies } from '@application/core/di-registry';
 import HTTPException from '@application/core/exception';
 import { RequestLoggerMiddleware } from '@application/middlewares/request-logger.middleware';
-import { prisma } from '@config/database';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
@@ -211,14 +210,7 @@ kernel.register(bootstrap, {
 });
 
 kernel.get('/health-check', async (_request, response) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return response.status(200).send({ status: 'ok', database: 'connected' });
-  } catch {
-    return response
-      .status(503)
-      .send({ status: 'degraded', database: 'disconnected' });
-  }
+  return response.status(200).send({ status: 'ok' });
 });
 
 kernel.get('/openapi.json', async function () {

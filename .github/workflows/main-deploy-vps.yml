@@ -87,4 +87,16 @@ jobs:
 
             echo "Waiting for services to be healthy..."
             sleep 10
-            docker compose -f docker-compose.production.yml ps
+
+            if ! docker compose -f docker-compose.production.yml ps | grep -q "unhealthy\|Exit"; then
+              echo "All services are running!"
+              docker compose -f docker-compose.production.yml ps
+            else
+              echo "ERROR: Some services failed to start!"
+              docker compose -f docker-compose.production.yml ps
+              echo "--- API Logs ---"
+              docker compose -f docker-compose.production.yml logs --tail=50 api
+              echo "--- APP Logs ---"
+              docker compose -f docker-compose.production.yml logs --tail=50 app
+              exit 1
+            fi
