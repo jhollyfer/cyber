@@ -1,19 +1,22 @@
 import {
   SubmitAnswerDocumentationSchema
-} from "../../../../chunk-TN3HTXKE.js";
+} from "../../../../chunk-ZCPBVR4C.js";
 import {
   SubmitAnswerBodySchema
 } from "../../../../chunk-SCL2U7VE.js";
 import {
   SubmitAnswerUseCase
-} from "../../../../chunk-NKVFWG6M.js";
+} from "../../../../chunk-DQ2DAAWQ.js";
+import {
+  IdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
 import "../../../../chunk-L747NW6V.js";
 import "../../../../chunk-WTYPRCME.js";
-import "../../../../chunk-NFWZCG5O.js";
 import "../../../../chunk-QL5RK6WA.js";
+import "../../../../chunk-NFWZCG5O.js";
 import "../../../../chunk-PX5JYL6Y.js";
 import "../../../../chunk-67AJRFDF.js";
 import {
@@ -43,7 +46,7 @@ var _class = class {
   }
   async handle(request, response) {
     const payload = SubmitAnswerBodySchema.parse(request.body);
-    const sessionId = request.params.id;
+    const { id: sessionId } = IdParamSchema.parse(request.params);
     const userId = request.user.sub;
     const result = await this.useCase.execute({
       ...payload,

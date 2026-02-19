@@ -1,12 +1,12 @@
 import {
-  CreateModuleDocumentationSchema
-} from "../../../../chunk-2FGIXWGU.js";
-import {
   CreateModuleBodySchema
 } from "../../../../chunk-RDLICDBS.js";
 import {
   CreateModuleUseCase
 } from "../../../../chunk-XMW6NVZ5.js";
+import {
+  CreateModuleDocumentationSchema
+} from "../../../../chunk-2FGIXWGU.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";

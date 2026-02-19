@@ -1,6 +1,6 @@
 import {
   SubmitAnswerDocumentationSchema
-} from "../../../../chunk-TN3HTXKE.js";
+} from "../../../../chunk-ZCPBVR4C.js";
 import "../../../../chunk-SHUYVCID.js";
 export {
   SubmitAnswerDocumentationSchema

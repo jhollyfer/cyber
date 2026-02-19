@@ -36,25 +36,16 @@ var _class = class {
     this.useCase = useCase;
   }
   async handle(_request, response) {
-    try {
-      const result = await this.useCase.execute();
-      if (result.isLeft()) {
-        const error = result.value;
-        return response.status(error.code).send({
-          message: error.message,
-          code: error.code,
-          cause: error.cause
-        });
-      }
-      return response.status(200).send(result.value);
-    } catch (error) {
-      console.error(error);
-      return response.status(500).send({
-        message: "Internal server error",
-        code: 500,
-        cause: "RANKING_ERROR"
+    const result = await this.useCase.execute();
+    if (result.isLeft()) {
+      const error = result.value;
+      return response.status(error.code).send({
+        message: error.message,
+        code: error.code,
+        cause: error.cause
       });
     }
+    return response.status(200).send(result.value);
   }
 };
 _ts_decorate([

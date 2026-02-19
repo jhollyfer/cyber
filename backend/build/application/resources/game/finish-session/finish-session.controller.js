@@ -1,9 +1,12 @@
 import {
+  FinishSessionDocumentationSchema
+} from "../../../../chunk-RHVADTOA.js";
+import {
   FinishSessionUseCase
 } from "../../../../chunk-6GMU7HD4.js";
 import {
-  FinishSessionDocumentationSchema
-} from "../../../../chunk-RHVADTOA.js";
+  IdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
@@ -38,7 +41,7 @@ var _class = class {
     this.useCase = useCase;
   }
   async handle(request, response) {
-    const sessionId = request.params.id;
+    const { id: sessionId } = IdParamSchema.parse(request.params);
     const userId = request.user.sub;
     const result = await this.useCase.execute({
       session_id: sessionId,

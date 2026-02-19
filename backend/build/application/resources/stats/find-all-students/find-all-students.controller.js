@@ -1,9 +1,9 @@
 import {
-  FindAllStudentsDocumentationSchema
-} from "../../../../chunk-Q2H4HX77.js";
-import {
   FindAllStudentsUseCase
 } from "../../../../chunk-C6MFCSRH.js";
+import {
+  FindAllStudentsDocumentationSchema
+} from "../../../../chunk-Q2H4HX77.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";

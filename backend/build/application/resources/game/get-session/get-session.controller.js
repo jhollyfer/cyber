@@ -5,6 +5,9 @@ import {
   GetSessionUseCase
 } from "../../../../chunk-5SEHPNA7.js";
 import {
+  IdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
+import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
 import "../../../../chunk-L747NW6V.js";
@@ -45,8 +48,9 @@ var _class = class {
     return response.status(200).send(sessions);
   }
   async handle(request, response) {
+    const { id } = IdParamSchema.parse(request.params);
     const result = await this.getSessionUseCase.execute({
-      session_id: request.params.id,
+      session_id: id,
       user_id: request.user.sub
     });
     if (result.isLeft()) {

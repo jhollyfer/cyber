@@ -6,14 +6,14 @@ import {
 } from "../../../../chunk-BHXDT2OL.js";
 import {
   SignUpUseCase
-} from "../../../../chunk-J5ZJEZI7.js";
-import {
-  setCookieTokens
-} from "../../../../chunk-KSLPQLL5.js";
+} from "../../../../chunk-XDC7J6F6.js";
 import {
   createTokens
 } from "../../../../chunk-3BYXAMOQ.js";
 import "../../../../chunk-3VPHLQXE.js";
+import {
+  setCookieTokens
+} from "../../../../chunk-KSLPQLL5.js";
 import "../../../../chunk-L747NW6V.js";
 import "../../../../chunk-PTQ2KP5N.js";
 import "../../../../chunk-OQ2TB6G7.js";
@@ -63,7 +63,13 @@ _ts_decorate([
   POST({
     url: "/sign-up",
     options: {
-      schema: SignUpDocumentationSchema
+      schema: SignUpDocumentationSchema,
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute"
+        }
+      }
     }
   }),
   _ts_metadata("design:type", Function),

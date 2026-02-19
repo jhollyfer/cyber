@@ -1,19 +1,19 @@
 import {
+  SignInUseCase
+} from "../../../../chunk-LSBYSPAP.js";
+import {
   SignInDocumentationSchema
 } from "../../../../chunk-M4ALRPMH.js";
 import {
   SignInBodySchema
 } from "../../../../chunk-V5NYOY7X.js";
 import {
-  SignInUseCase
-} from "../../../../chunk-LSBYSPAP.js";
-import {
-  setCookieTokens
-} from "../../../../chunk-KSLPQLL5.js";
-import {
   createTokens
 } from "../../../../chunk-3BYXAMOQ.js";
 import "../../../../chunk-3VPHLQXE.js";
+import {
+  setCookieTokens
+} from "../../../../chunk-KSLPQLL5.js";
 import "../../../../chunk-L747NW6V.js";
 import "../../../../chunk-PTQ2KP5N.js";
 import "../../../../chunk-OQ2TB6G7.js";
@@ -63,7 +63,13 @@ _ts_decorate([
   POST({
     url: "/sign-in",
     options: {
-      schema: SignInDocumentationSchema
+      schema: SignInDocumentationSchema,
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "1 minute"
+        }
+      }
     }
   }),
   _ts_metadata("design:type", Function),

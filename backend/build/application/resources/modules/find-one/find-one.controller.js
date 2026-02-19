@@ -1,9 +1,12 @@
 import {
+  FindOneModuleDocumentationSchema
+} from "../../../../chunk-I3Q3HO5X.js";
+import {
   FindOneModuleUseCase
 } from "../../../../chunk-MIZSANQJ.js";
 import {
-  FindOneModuleDocumentationSchema
-} from "../../../../chunk-I3Q3HO5X.js";
+  IdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
@@ -36,7 +39,7 @@ var _class = class {
     this.useCase = useCase;
   }
   async handle(request, response) {
-    const { id } = request.params;
+    const { id } = IdParamSchema.parse(request.params);
     const result = await this.useCase.execute({
       id
     });

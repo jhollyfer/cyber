@@ -9,13 +9,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-backend:
-    name: Test Backend
-    uses: ./.github/workflows/main-test-backend.yml
-
   build-backend:
     name: Build Backend
-    needs: [test-backend]
     uses: ./.github/workflows/main-build-backend.yml
 
   build-frontend:

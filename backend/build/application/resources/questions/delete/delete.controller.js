@@ -5,6 +5,9 @@ import {
   DeleteQuestionUseCase
 } from "../../../../chunk-DRGCRFTJ.js";
 import {
+  IdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
+import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
 import {
@@ -39,7 +42,7 @@ var _class = class {
     this.useCase = useCase;
   }
   async handle(request, response) {
-    const { id } = request.params;
+    const { id } = IdParamSchema.parse(request.params);
     const result = await this.useCase.execute({
       id
     });

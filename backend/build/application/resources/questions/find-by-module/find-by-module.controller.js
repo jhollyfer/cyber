@@ -1,9 +1,12 @@
 import {
+  FindByModuleUseCase
+} from "../../../../chunk-XA3HOST5.js";
+import {
   FindByModuleQuestionsDocumentationSchema
 } from "../../../../chunk-W5YXM6GH.js";
 import {
-  FindByModuleUseCase
-} from "../../../../chunk-XA3HOST5.js";
+  ModuleIdParamSchema
+} from "../../../../chunk-5VR5R7MV.js";
 import {
   AuthenticationMiddleware
 } from "../../../../chunk-G46T6ZWT.js";
@@ -39,7 +42,7 @@ var _class = class {
     this.useCase = useCase;
   }
   async handle(request, response) {
-    const { moduleId } = request.params;
+    const { moduleId } = ModuleIdParamSchema.parse(request.params);
     const result = await this.useCase.execute({
       moduleId
     });
