@@ -1,0 +1,228 @@
+import 'reflect-metadata';
+
+import { loadControllers } from '@application/core/controllers';
+import { registerDependencies } from '@application/core/di-registry';
+import HTTPException from '@application/core/exception';
+import { RequestLoggerMiddleware } from '@application/middlewares/request-logger.middleware';
+import { prisma } from '@config/database';
+import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
+import jwt from '@fastify/jwt';
+import rateLimit from '@fastify/rate-limit';
+import swagger from '@fastify/swagger';
+import scalar from '@scalar/fastify-api-reference';
+import { Env } from '@start/env';
+import fastify from 'fastify';
+import { bootstrap } from 'fastify-decorators';
+import z, { ZodError } from 'zod';
+
+interface ValidationErrorDetail {
+  instancePath: string;
+  schemaPath: string;
+  keyword: string;
+  params: {
+    limit?: number;
+    missingProperty?: string;
+    [key: string]: unknown;
+  };
+  message: string;
+  emUsed?: boolean;
+}
+
+interface ValidationError {
+  instancePath: string;
+  schemaPath: string;
+  keyword: string;
+  params: {
+    errors: ValidationErrorDetail[];
+  };
+  message: string;
+}
+
+const kernel = fastify({
+  logger: false,
+  ajv: {
+    customOptions: {
+      allErrors: true,
+    },
+  },
+});
+
+RequestLoggerMiddleware(kernel);
+
+kernel.register(rateLimit, {
+  max: 100,
+  timeWindow: '1 minute',
+});
+
+kernel.register(cors, {
+  origin: (origin, callback) => {
+    const allowedOrigins = [Env.CLIENT_URL, Env.SERVER_URL];
+
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'), false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Cookie',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+  ],
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 200,
+  preflightContinue: false,
+  preflight: true,
+});
+
+kernel.register(cookie, {
+  secret: Env.COOKIE_SECRET,
+});
+
+const expiresIn = 60 * 60 * 24 * 1; // 1 day
+
+kernel.register(jwt, {
+  secret: {
+    private: Buffer.from(Env.JWT_PRIVATE_KEY, 'base64'),
+    public: Buffer.from(Env.JWT_PUBLIC_KEY, 'base64'),
+  },
+  sign: { expiresIn: expiresIn, algorithm: 'RS256' },
+  verify: { algorithms: ['RS256'] },
+  cookie: {
+    signed: false,
+    cookieName: 'accessToken',
+  },
+});
+
+kernel.setErrorHandler((error: Record<string, unknown>, _, response) => {
+  console.error(error);
+
+  if (error instanceof HTTPException) {
+    return response.status(error.code).send({
+      message: error.message,
+      code: error.code,
+      cause: error.cause,
+    });
+  }
+
+  if (error instanceof ZodError) {
+    const fieldErrors = z.flattenError(error).fieldErrors as Record<
+      string,
+      string[]
+    >;
+
+    const errors = Object.entries(fieldErrors).reduce(
+      (acc, [key, [value]]) => {
+        acc[key] = value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    return response.status(400).send({
+      message: 'Invalid request',
+      code: 400,
+      cause: 'INVALID_PAYLOAD_FORMAT',
+      errors,
+    });
+  }
+
+  if (error.code === 'FST_ERR_VALIDATION') {
+    const validation = error.validation as ValidationError[];
+
+    const errors = validation.reduce(
+      (acc: Record<string, string>, err: ValidationError) => {
+        const field = err.instancePath
+          ? err.instancePath.slice(1)
+          : err.params?.errors?.[0]?.params?.missingProperty || 'unknown';
+
+        if (err.message && field) {
+          acc[field] = err.message;
+        }
+        return acc;
+      },
+      {},
+    );
+
+    return response.status(Number(error.statusCode)).send({
+      message: 'Invalid request',
+      code: error.statusCode,
+      cause: 'INVALID_PAYLOAD_FORMAT',
+      ...(Object.keys(errors).length > 0 && { errors }),
+    });
+  }
+
+  return response.status(500).send({
+    message: 'Internal server error',
+    cause: 'SERVER_ERROR',
+    code: 500,
+  });
+});
+
+kernel.register(swagger, {
+  openapi: {
+    info: {
+      title: 'CyberGuardian API',
+      version: '1.0.0',
+      description: 'CyberGuardian API with JWT cookie-based authentication',
+    },
+    servers: [
+      {
+        url: Env.SERVER_URL,
+        description: 'Server URL',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        cookieAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'accessToken',
+        },
+      },
+    },
+  },
+});
+
+kernel.register(scalar, {
+  routePrefix: '/documentation',
+  configuration: {
+    title: 'CyberGuardian API',
+    description: 'CyberGuardian API Documentation',
+    version: '1.0.0',
+    theme: 'default',
+  },
+});
+
+registerDependencies();
+
+kernel.register(bootstrap, {
+  controllers: [...(await loadControllers())],
+});
+
+kernel.get('/health-check', async (_request, response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return response.status(200).send({ status: 'ok', database: 'connected' });
+  } catch {
+    return response
+      .status(503)
+      .send({ status: 'degraded', database: 'disconnected' });
+  }
+});
+
+kernel.get('/openapi.json', async function () {
+  return kernel.swagger();
+});
+
+export { kernel };

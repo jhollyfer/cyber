@@ -1,0 +1,193 @@
+# Utilitarios
+
+O diretorio `utils/` contem funcoes utilitarias para gerenciamento de tokens JWT e cookies HTTP.
+
+---
+
+## jwt.utils.ts - Criacao de Tokens
+
+### Interface TokenPair
+
+```typescript
+export interface TokenPair {
+  accessToken: string;
+  refreshToken: string;
+}
+```
+
+### createTokens(user, response)
+
+Cria um par de tokens JWT (access + refresh) para o usuario autenticado.
+
+```typescript
+export const createTokens = async (
+  user: Pick<IUser, 'id' | 'email' | 'role'>,
+  response: FastifyReply,
+): Promise<TokenPair> => {
+  // Access Token - 24h, RS256
+  const jwt: JWTPayload = {
+    sub: user.id.toString(),
+    email: user.email,
+    role: user.role,
+    type: 'access',
+  };
+
+  const accessToken = await response.jwtSign(jwt, {
+    sub: user.id.toString(),
+    expiresIn: '24h',
+  });
+
+  // Refresh Token - 7 dias
+  const refreshToken = await response.jwtSign(
+    {
+      sub: user.id.toString(),
+      type: 'refresh',
+    },
+    {
+      sub: user.id.toString(),
+      expiresIn: '7d',
+    },
+  );
+
+  return { accessToken, refreshToken };
+};
+```
+
+### Detalhes dos Tokens
+
+#### Access Token
+
+| Propriedade | Valor |
+|---|---|
+| Algoritmo | RS256 (assinatura assimetrica) |
+| Expiracao | 24 horas |
+| Payload `sub` | ID do usuario (UUID) |
+| Payload `email` | Email do usuario |
+| Payload `role` | Role do usuario (ex: `ADMINISTRATOR`, `CURATOR`, `ARTISAN`) |
+| Payload `type` | `access` |
+
+#### Refresh Token
+
+| Propriedade | Valor |
+|---|---|
+| Expiracao | 7 dias |
+| Payload `sub` | ID do usuario (UUID) |
+| Payload `type` | `refresh` |
+
+O refresh token possui payload minimo (apenas `sub` e `type`), pois serve apenas para renovar o access token.
+
+### Determinacao do Role
+
+O role do usuario e obtido diretamente do campo `role` da entidade `IUser`, que corresponde ao enum `ERole` do Prisma:
+
+```typescript
+role: user.role
+// Valores possiveis: 'ADMINISTRATOR', 'CURATOR', 'ARTISAN'
+```
+
+---
+
+## cookies.utils.ts - Gerenciamento de Cookies
+
+### setCookieTokens(response, tokens)
+
+Define os cookies `accessToken` e `refreshToken` na resposta HTTP.
+
+```typescript
+export const setCookieTokens = (
+  response: FastifyReply,
+  tokens: TokenPair,
+): void => {
+  const cookieOptions = {
+    path: '/',
+    secure: Env.NODE_ENV === 'production',
+    sameSite: Env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+    httpOnly: true,
+    ...(Env.COOKIE_DOMAIN && { domain: Env.COOKIE_DOMAIN }),
+  };
+
+  response
+    .setCookie('accessToken', tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 60 * 60 * 24 * 1000, // 24h em milissegundos
+    })
+    .setCookie('refreshToken', tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 60 * 60 * 7 * 24 * 1000, // 7 dias em milissegundos
+    });
+};
+```
+
+### Opcoes dos Cookies
+
+| Opcao | Producao | Desenvolvimento |
+|---|---|---|
+| `path` | `/` | `/` |
+| `secure` | `true` (HTTPS) | `false` |
+| `sameSite` | `none` (permite cross-site) | `lax` (mesmo site) |
+| `httpOnly` | `true` (inacessivel via JS) | `true` |
+| `domain` | Valor de `COOKIE_DOMAIN` (se definido) | Valor de `COOKIE_DOMAIN` (se definido) |
+
+### Tempo de Vida dos Cookies
+
+| Cookie | maxAge |
+|---|---|
+| `accessToken` | 24 horas (86.400.000 ms) |
+| `refreshToken` | 7 dias (604.800.000 ms) |
+
+### clearCookieTokens(response)
+
+Remove os cookies `accessToken` e `refreshToken` da resposta HTTP. Usado no logout.
+
+```typescript
+export const clearCookieTokens = (response: FastifyReply): void => {
+  const cookieOptions = {
+    path: '/',
+    secure: Env.NODE_ENV === 'production',
+    sameSite: Env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
+    httpOnly: true,
+    ...(Env.COOKIE_DOMAIN && { domain: Env.COOKIE_DOMAIN }),
+  };
+
+  response
+    .clearCookie('accessToken', cookieOptions)
+    .clearCookie('refreshToken', cookieOptions);
+};
+```
+
+As opcoes de limpeza devem ser identicas as de criacao para que o navegador reconheca e remova os cookies corretamente.
+
+---
+
+## Fluxo Completo de Autenticacao
+
+O diagrama abaixo ilustra como os utilitarios se integram no fluxo de autenticacao:
+
+```
+1. Login (POST /authentication/sign-in)
+   └─ createTokens(user, response)     → Gera accessToken + refreshToken
+   └─ setCookieTokens(response, tokens) → Define cookies na resposta
+
+2. Requisicao autenticada (qualquer endpoint protegido)
+   └─ AuthenticationMiddleware          → Extrai accessToken do cookie
+   └─ request.server.jwt.decode()      → Decodifica e valida JWT
+   └─ request.user = { sub, email, role, type }
+
+3. Renovacao (POST /authentication/refresh-token)
+   └─ Extrai refreshToken do cookie
+   └─ Valida tipo 'refresh'
+   └─ createTokens(user, response)     → Gera novos tokens
+   └─ setCookieTokens(response, tokens) → Atualiza cookies
+
+4. Logout (POST /authentication/sign-out)
+   └─ clearCookieTokens(response)      → Remove cookies
+```
+
+### Seguranca
+
+- **httpOnly: true** - Cookies inacessiveis via JavaScript no navegador, prevenindo roubo via XSS
+- **secure: true (producao)** - Cookies transmitidos apenas via HTTPS
+- **sameSite: none (producao)** - Permite uso cross-site (necessario para APIs em dominio diferente do frontend)
+- **sameSite: lax (desenvolvimento)** - Protecao padrao contra CSRF em ambiente local
+- **RS256** - Assinatura assimetrica do JWT (chave privada para assinar, chave publica para verificar)
+- **COOKIE_DOMAIN** - Opcional, permite definir o dominio dos cookies para compartilhamento entre subdominios

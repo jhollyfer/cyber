@@ -1,0 +1,77 @@
+name: cyberguardian-app
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: cyberguardian-database
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - cyberguardian-database-volume:/var/lib/postgresql/data
+    networks:
+      - cyberguardian-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile-development
+    container_name: cyberguardian-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file: .env
+    networks:
+      - cyberguardian-network
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile-development
+    container_name: cyberguardian-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      - PORT=3000
+      - VITE_API_BASE_URL=http://localhost:4000
+    networks:
+      - cyberguardian-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+networks:
+  cyberguardian-network:
+    driver: bridge
+
+volumes:
+  cyberguardian-database-volume:
+    driver: local

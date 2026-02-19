@@ -1,0 +1,26 @@
+import { AlertTriangle } from 'lucide-react';
+import { useRouter } from '@tanstack/react-router';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+export default function RouteError({ error }: { error: Error }) {
+  const router = useRouter();
+
+  return (
+    <div className="min-h-[80vh] flex items-center justify-center px-4">
+      <Card className="max-w-md w-full text-center py-12">
+        <CardContent>
+          <AlertTriangle className="w-12 h-12 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Algo deu errado</h2>
+          <p className="text-muted-foreground text-sm mb-6">
+            {error.message || 'Ocorreu um erro inesperado. Tente novamente.'}
+          </p>
+          <Button onClick={() => router.invalidate()}>
+            Tentar Novamente
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

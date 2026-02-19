@@ -1,0 +1,28 @@
+import {
+  __name
+} from "./chunk-SHUYVCID.js";
+
+// application/services/email/nodemailer-email.service.ts
+import { Service } from "fastify-decorators";
+function _ts_decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+__name(_ts_decorate, "_ts_decorate");
+var NodemailerEmailService = class {
+  static {
+    __name(this, "NodemailerEmailService");
+  }
+  async send(payload) {
+    console.log(`[Email] Would send to: ${payload.to}, subject: ${payload.subject}`);
+  }
+};
+NodemailerEmailService = _ts_decorate([
+  Service()
+], NodemailerEmailService);
+
+export {
+  NodemailerEmailService
+};
