@@ -335,7 +335,7 @@ function GamePage() {
             <span className="px-3 py-1 rounded-full bg-primary text-white text-xs font-semibold">
               Questao {displayQuestionNumber}
             </span>
-            {currentQuestion.category && (
+            {/* {currentQuestion.category && (
               <span className="px-3 py-1 rounded-full bg-secondary text-primary-foreground text-xs">
                 {currentQuestion.category}
               </span>
@@ -344,7 +344,7 @@ function GamePage() {
               <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs">
                 {currentQuestion.context}
               </span>
-            )}
+            )} */}
           </div>
 
           {/* Question Text */}
