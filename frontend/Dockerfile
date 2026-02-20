@@ -7,7 +7,6 @@ RUN apk add --no-cache curl
 
 # Copiar .output pronto (vem do artifact)
 COPY .output/ ./.output/
-COPY replace-env.js ./replace-env.js
 
 # Copiar entrypoint
 COPY docker-entrypoint.sh /docker-entrypoint.sh
@@ -17,7 +16,6 @@ RUN chmod +x /docker-entrypoint.sh
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nitro && \
     chown nitro:nodejs /docker-entrypoint.sh && \
-    chown nitro:nodejs /app/replace-env.js && \
     chown -R nitro:nodejs /app/.output
 
 USER nitro
