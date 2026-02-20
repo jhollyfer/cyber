@@ -61,9 +61,9 @@ const emptyFormData = {
 };
 
 const gradientOptions = [
-  { value: 'gradient-purple', label: 'Roxo', preview: 'bg-gradient-purple' },
-  { value: 'gradient-pink', label: 'Rosa', preview: 'bg-gradient-pink' },
-  { value: 'gradient-cyan', label: 'Ciano', preview: 'bg-gradient-cyan' },
+  { value: 'gradient-purple', label: 'Roxo', preview: 'bg-primary' },
+  { value: 'gradient-pink', label: 'Rosa', preview: 'bg-destructive' },
+  { value: 'gradient-cyan', label: 'Ciano', preview: 'bg-secondary' },
 ];
 
 function AdminModulesPage() {
@@ -162,7 +162,7 @@ function AdminModulesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">Modulos</h1>
+          <h1 className="text-3xl font-bold text-primary">Modulos</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {modules?.length ?? 0} modulo{modules?.length !== 1 ? 's' : ''}{' '}
             cadastrado{modules?.length !== 1 ? 's' : ''}
@@ -390,7 +390,7 @@ function AdminModulesPage() {
               <Card
                 key={mod.id}
                 className={cn(
-                  'group relative transition-all duration-200 hover:border-cyber-purple/50',
+                  'group relative transition-all duration-200 hover:border-primary/50',
                   !mod.active && 'opacity-50',
                 )}
               >
@@ -401,8 +401,8 @@ function AdminModulesPage() {
                       variant="outline"
                       className={cn(
                         mod.active
-                          ? 'bg-cyber-green/10 text-cyber-green border-cyber-green/30'
-                          : 'bg-cyber-red/10 text-cyber-red border-cyber-red/30',
+                          ? 'bg-success/10 text-success border-success/30'
+                          : 'bg-destructive/10 text-destructive border-destructive/30',
                       )}
                     >
                       {mod.active ? 'Ativo' : 'Inativo'}
@@ -416,7 +416,7 @@ function AdminModulesPage() {
                   <h3 className="text-lg font-bold mb-1">
                     {mod.title}
                   </h3>
-                  <p className="text-sm text-cyber-purple mb-3">{mod.label}</p>
+                  <p className="text-sm text-primary mb-3">{mod.label}</p>
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                     {mod.description}
                   </p>

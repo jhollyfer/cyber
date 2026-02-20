@@ -46,6 +46,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@tanstack/eslint-config": "^0.3.4",
     "@tanstack/eslint-plugin-router": "^1.155.0",
     "@types/canvas-confetti": "^1.6.4",

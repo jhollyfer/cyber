@@ -17,4 +17,9 @@ export abstract class GameSessionContractRepository {
   abstract findByUserAndModule(userId: string, moduleId: string): Promise<IGameSession[]>;
   abstract clearBestFlag(userId: string, moduleId: string): Promise<void>;
   abstract findBestSessionsByUser(userId: string): Promise<IGameSession[]>;
+  abstract findUnfinishedByUser(userId: string): Promise<IGameSession[]>;
+  abstract findUnfinishedByUserAndModule(
+    userId: string,
+    moduleId: string,
+  ): Promise<(IGameSession & { answers: { question_id: string }[] }) | null>;
 }

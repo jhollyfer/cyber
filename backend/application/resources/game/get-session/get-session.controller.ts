@@ -32,6 +32,21 @@ export default class {
   }
 
   @GET({
+    url: '/sessions/unfinished',
+    options: {
+      onRequest: [AuthenticationMiddleware()],
+    },
+  })
+  async handleUnfinished(
+    request: FastifyRequest,
+    response: FastifyReply,
+  ): Promise<void> {
+    const userId = request.user!.sub;
+    const sessions = await this.gameSessionRepository.findUnfinishedByUser(userId);
+    return response.status(200).send(sessions);
+  }
+
+  @GET({
     url: '/sessions/:id',
     options: {
       schema: GetSessionDocumentationSchema,

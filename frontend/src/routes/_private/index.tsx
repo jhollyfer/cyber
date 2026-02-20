@@ -57,6 +57,15 @@ export default function DashboardPage(): React.JSX.Element | null {
     enabled: !isAdmin,
   });
 
+  const { data: unfinishedSessions } = useQuery({
+    queryKey: queryKeys.game.unfinishedSessions(),
+    queryFn: async () => {
+      const { data } = await api.get<Array<GameSession>>('/game/sessions/unfinished');
+      return data;
+    },
+    enabled: !isAdmin,
+  });
+
   const userRanking = ranking?.find((entry) => entry.user_id === user?.id);
   const userPosition = ranking?.findIndex(
     (entry) => entry.user_id === user?.id,
@@ -69,6 +78,9 @@ export default function DashboardPage(): React.JSX.Element | null {
       completionMap.set(s.module_id, s);
     }
   });
+
+  const unfinishedSet = new Set<string>();
+  unfinishedSessions?.forEach((s) => unfinishedSet.add(s.module_id));
 
   // Check if all modules completed
   const sortedModules = modules?.sort((a, b) => a.order - b.order) ?? [];
@@ -105,7 +117,7 @@ export default function DashboardPage(): React.JSX.Element | null {
       return (
         <div className="max-w-3xl mx-auto text-center py-8">
           <div className="text-6xl mb-6">{'\u{1F3C6}'}</div>
-          <h1 className="text-3xl font-bold gradient-text mb-4">
+          <h1 className="text-3xl font-bold text-primary mb-4">
             Parabens, {user?.name}!
           </h1>
           <p className="text-muted-foreground text-lg mb-8">
@@ -131,7 +143,7 @@ export default function DashboardPage(): React.JSX.Element | null {
                     <p
                       className={cn(
                         'text-2xl font-bold',
-                        passed ? 'text-cyber-green' : 'text-cyber-red',
+                        passed ? 'text-success' : 'text-destructive',
                       )}
                     >
                       {formatNota(nota)}
@@ -158,7 +170,7 @@ export default function DashboardPage(): React.JSX.Element | null {
       {/* Welcome Section */}
       <div className="mb-10">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-          Bem-vindo, <span className="gradient-text">{user?.name}</span>
+          Bem-vindo, <span className="text-primary">{user?.name}</span>
         </h1>
         <p className="text-muted-foreground text-lg">
           Complete as fases em ordem para testar seus conhecimentos em
@@ -172,8 +184,8 @@ export default function DashboardPage(): React.JSX.Element | null {
           <CardContent className="pt-6">
             <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-purple flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Sua posicao</p>
@@ -188,8 +200,8 @@ export default function DashboardPage(): React.JSX.Element | null {
               <div className="h-10 w-px bg-border hidden sm:block" />
 
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-pink flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-destructive flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Nota media</p>
@@ -197,8 +209,8 @@ export default function DashboardPage(): React.JSX.Element | null {
                     className={cn(
                       'text-xl font-bold',
                       userRanking.average_nota >= 6
-                        ? 'text-cyber-green'
-                        : 'text-cyber-red',
+                        ? 'text-success'
+                        : 'text-destructive',
                     )}
                   >
                     {formatNota(userRanking.average_nota)}
@@ -209,8 +221,8 @@ export default function DashboardPage(): React.JSX.Element | null {
               <div className="h-10 w-px bg-border hidden sm:block" />
 
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-cyan flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Modulos completos</p>
@@ -233,7 +245,7 @@ export default function DashboardPage(): React.JSX.Element | null {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Melhor sequencia</p>
-                  <p className="text-xl font-bold text-cyber-purple">
+                  <p className="text-xl font-bold text-primary">
                     {userRanking.best_streak}x
                   </p>
                 </div>
@@ -269,6 +281,7 @@ export default function DashboardPage(): React.JSX.Element | null {
         {sortedModules.map((module) => {
           const completedSession = completionMap.get(module.id);
           const isCompleted = !!completedSession;
+          const hasUnfinished = !isCompleted && unfinishedSet.has(module.id);
 
           // Module is unlocked if: order=1, or previous module is completed
           let isUnlocked = module.order === 1;
@@ -289,6 +302,7 @@ export default function DashboardPage(): React.JSX.Element | null {
               isCompleted={isCompleted}
               isUnlocked={isUnlocked}
               completedNota={completedSession?.nota ?? null}
+              hasUnfinished={hasUnfinished}
             />
           );
         })}
@@ -302,6 +316,7 @@ interface ModuleCardProps {
   isCompleted: boolean;
   isUnlocked: boolean;
   completedNota: number | null;
+  hasUnfinished: boolean;
 }
 
 function ModuleCard({
@@ -309,6 +324,7 @@ function ModuleCard({
   isCompleted,
   isUnlocked,
   completedNota,
+  hasUnfinished,
 }: ModuleCardProps): React.JSX.Element {
   const gradientClass = getGradientClass(module.gradient);
   const isLocked = !isUnlocked;
@@ -319,7 +335,7 @@ function ModuleCard({
         'group relative rounded-2xl overflow-hidden transition-all duration-300',
         isLocked && 'opacity-60',
         !isLocked &&
-          'hover:scale-[1.02] hover:shadow-2xl hover:shadow-cyber-purple/20',
+          'hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20',
       )}
     >
       {/* Gradient Background */}
@@ -331,10 +347,10 @@ function ModuleCard({
         className={cn(
           'absolute inset-0 rounded-2xl border transition-colors',
           isCompleted
-            ? 'border-cyber-green/50'
+            ? 'border-success/50'
             : isLocked
               ? 'border-border/50'
-              : 'border-border group-hover:border-cyber-purple/50',
+              : 'border-border group-hover:border-primary/50',
         )}
       />
 
@@ -346,13 +362,13 @@ function ModuleCard({
             className={cn(
               'inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase',
               isLocked ? 'bg-muted text-muted-foreground' : gradientClass,
-              !isLocked && 'text-white',
+              !isLocked && 'text-primary-foreground',
             )}
           >
             {module.label}
           </span>
 
-          {isCompleted && <CheckCircle className="w-6 h-6 text-cyber-green" />}
+          {isCompleted && <CheckCircle className="w-6 h-6 text-success" />}
           {isLocked && <Lock className="w-5 h-5 text-muted-foreground" />}
         </div>
 
@@ -366,7 +382,7 @@ function ModuleCard({
               'text-xl font-bold transition-colors',
               isLocked
                 ? 'text-muted-foreground'
-                : 'group-hover:text-cyber-purple',
+                : 'group-hover:text-primary',
             )}
           >
             {module.title}
@@ -391,8 +407,8 @@ function ModuleCard({
               className={cn(
                 'text-sm font-bold',
                 completedNota >= 6
-                  ? 'border-cyber-green/30 bg-cyber-green/10 text-cyber-green'
-                  : 'border-cyber-red/30 bg-cyber-red/10 text-cyber-red',
+                  ? 'border-success/30 bg-success/10 text-success'
+                  : 'border-destructive/30 bg-destructive/10 text-destructive',
               )}
             >
               Nota: {formatNota(completedNota)}
@@ -411,12 +427,16 @@ function ModuleCard({
               to="/game/$moduleId"
               params={{ moduleId: module.id }}
               className={cn(
-                'px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all duration-200',
+                'px-5 py-2.5 rounded-xl font-semibold text-sm text-primary-foreground transition-all duration-200',
                 'shadow-lg hover:opacity-90',
                 gradientClass,
               )}
             >
-              {isCompleted ? 'Jogar novamente' : 'Jogar'}
+              {isCompleted
+                ? 'Jogar novamente'
+                : hasUnfinished
+                  ? 'Continuar'
+                  : 'Jogar'}
             </Link>
           )}
         </div>

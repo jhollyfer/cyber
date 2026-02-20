@@ -53,8 +53,8 @@ function RankingPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Trophy className="w-8 h-8 text-cyber-yellow" />
-          <h1 className="text-3xl font-bold gradient-text">Ranking</h1>
+          <Trophy className="w-8 h-8 text-warning" />
+          <h1 className="text-3xl font-bold text-primary">Ranking</h1>
         </div>
         <p className="text-muted-foreground text-lg">
           {user
@@ -68,19 +68,19 @@ function RankingPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <Card className="text-center">
             <CardContent className="pt-6">
-              <Users className="w-5 h-5 text-cyber-purple mx-auto mb-2" />
+              <Users className="w-5 h-5 text-primary mx-auto mb-2" />
               <p className="text-xs text-muted-foreground mb-1">Total Jogadores</p>
               <p className="text-2xl font-bold">{totalPlayers}</p>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <BarChart3 className="w-5 h-5 text-cyber-cyan mx-auto mb-2" />
+              <BarChart3 className="w-5 h-5 text-secondary mx-auto mb-2" />
               <p className="text-xs text-muted-foreground mb-1">Media Geral</p>
               <p
                 className={cn(
                   'text-2xl font-bold',
-                  averageNota >= 6 ? 'text-cyber-green' : 'text-cyber-red',
+                  averageNota >= 6 ? 'text-success' : 'text-destructive',
                 )}
               >
                 {formatNota(averageNota)}
@@ -89,18 +89,18 @@ function RankingPage() {
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <TrendingUp className="w-5 h-5 text-cyber-green mx-auto mb-2" />
+              <TrendingUp className="w-5 h-5 text-success mx-auto mb-2" />
               <p className="text-xs text-muted-foreground mb-1">Aprovados</p>
-              <p className="text-2xl font-bold text-cyber-green">
+              <p className="text-2xl font-bold text-success">
                 {approvedPercent}%
               </p>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="pt-6">
-              <Award className="w-5 h-5 text-cyber-yellow mx-auto mb-2" />
+              <Award className="w-5 h-5 text-warning mx-auto mb-2" />
               <p className="text-xs text-muted-foreground mb-1">Maior Nota</p>
-              <p className="text-2xl font-bold text-cyber-yellow">
+              <p className="text-2xl font-bold text-warning">
                 {formatNota(highestNota)}
               </p>
             </CardContent>

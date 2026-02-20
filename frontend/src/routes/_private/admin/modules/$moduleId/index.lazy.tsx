@@ -80,9 +80,9 @@ const emptyQuestionForm: {
 };
 
 const gradientOptions = [
-  { value: 'gradient-purple', label: 'Roxo', preview: 'bg-gradient-purple' },
-  { value: 'gradient-pink', label: 'Rosa', preview: 'bg-gradient-pink' },
-  { value: 'gradient-cyan', label: 'Ciano', preview: 'bg-gradient-cyan' },
+  { value: 'gradient-purple', label: 'Roxo', preview: 'bg-primary' },
+  { value: 'gradient-pink', label: 'Rosa', preview: 'bg-destructive' },
+  { value: 'gradient-cyan', label: 'Ciano', preview: 'bg-secondary' },
 ];
 
 function AdminModuleEditPage(): React.ReactElement {
@@ -358,7 +358,7 @@ function AdminModuleEditPage(): React.ReactElement {
     <div className="max-w-5xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold gradient-text">
+        <h1 className="text-3xl font-bold text-primary">
           {moduleData.icon} {moduleData.title}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -500,7 +500,7 @@ function AdminModuleEditPage(): React.ReactElement {
         <AlertDialogContent>
           <AlertDialogHeader>
             <div className="flex justify-center mb-2">
-              <AlertTriangle className="w-12 h-12 text-cyber-yellow" />
+              <AlertTriangle className="w-12 h-12 text-warning" />
             </div>
             <AlertDialogTitle className="text-center">
               Alteracoes nao salvas
@@ -614,7 +614,7 @@ function AdminModuleEditPage(): React.ReactElement {
                               className={cn(
                                 'flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all',
                                 questionForm.getFieldValue('correct') === index
-                                  ? 'border-cyber-green bg-cyber-green/20 text-cyber-green'
+                                  ? 'border-success bg-success/20 text-success'
                                   : 'border-border text-muted-foreground hover:border-muted-foreground',
                               )}
                               title={
@@ -827,7 +827,7 @@ function AdminModuleEditPage(): React.ReactElement {
                             className={cn(
                               'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm',
                               question.correct === optIndex
-                                ? 'bg-cyber-green/10 text-cyber-green font-medium'
+                                ? 'bg-success/10 text-success font-medium'
                                 : 'text-muted-foreground',
                             )}
                           >

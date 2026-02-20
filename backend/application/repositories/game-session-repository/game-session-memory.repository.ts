@@ -105,6 +105,32 @@ export default class GameSessionMemoryRepository extends GameSessionContractRepo
     }
   }
 
+  async findUnfinishedByUserAndModule(
+    userId: string,
+    moduleId: string,
+  ): Promise<(IGameSession & { answers: { question_id: string }[] }) | null> {
+    const session = this.sessions
+      .filter(
+        (s) =>
+          s.user_id === userId && s.module_id === moduleId && s.finished === false,
+      )
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0];
+
+    if (!session) return null;
+
+    const sessionAnswers = this.answers
+      .filter((a) => a.session_id === session.id)
+      .map((a) => ({ question_id: a.question_id }));
+
+    return { ...session, answers: sessionAnswers };
+  }
+
+  async findUnfinishedByUser(userId: string): Promise<IGameSession[]> {
+    return this.sessions
+      .filter((s) => s.user_id === userId && s.finished === false)
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+  }
+
   async findBestSessionsByUser(userId: string): Promise<IGameSession[]> {
     return this.sessions.filter(
       (s) => s.user_id === userId && s.is_best === true && s.finished === true,

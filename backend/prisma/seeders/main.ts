@@ -1,8 +1,9 @@
+import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcryptjs';
 import { config } from 'dotenv';
 config();
-import { PrismaPg } from '@prisma/adapter-pg';
+
 import { PrismaClient } from '../../generated/prisma/client';
-import bcrypt from 'bcryptjs';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -11,7 +12,7 @@ const ADMINISTRATOR_PHONE = process.env.ADMINISTRATOR_PHONE!;
 const ADMINISTRATOR_PASSWORD = process.env.ADMINISTRATOR_PASSWORD!;
 const ADMINISTRATOR_NAME = process.env.ADMINISTRATOR_NAME!;
 
-async function main() {
+async function main(): Promise<void> {
   console.log('Seeding database...');
 
   // --- Admin User ---
@@ -293,12 +294,7 @@ async function main() {
         module_id: module2.id,
         question:
           'Um golpista liga se passando por técnico da operadora e pede para instalar um "app de suporte". Que técnica é essa?',
-        options: [
-          'Phishing',
-          'Engenharia Social',
-          'DDoS',
-          'Brute Force',
-        ],
+        options: ['Phishing', 'Engenharia Social', 'DDoS', 'Brute Force'],
         correct: 1,
         explanation:
           'Engenharia Social manipula pessoas psicologicamente para obter informações ou acessos. A vítima é enganada pela confiança, não por código.',
@@ -310,12 +306,7 @@ async function main() {
         module_id: module2.id,
         question:
           'Milhares de computadores enviam requisições simultâneas a um site, derrubando-o. Qual ataque é esse?',
-        options: [
-          'Phishing',
-          'Man-in-the-Middle',
-          'DDoS',
-          'SQL Injection',
-        ],
+        options: ['Phishing', 'Man-in-the-Middle', 'DDoS', 'SQL Injection'],
         correct: 2,
         explanation:
           'DDoS (Distributed Denial of Service) sobrecarrega o servidor com tráfego massivo, tornando o serviço indisponível.',
@@ -327,12 +318,7 @@ async function main() {
         module_id: module2.id,
         question:
           'Um programa se disfarça de jogo grátis, mas ao ser instalado, rouba senhas em segundo plano. Que malware é esse?',
-        options: [
-          'Worm',
-          'Trojan (Cavalo de Troia)',
-          'Adware',
-          'Rootkit',
-        ],
+        options: ['Worm', 'Trojan (Cavalo de Troia)', 'Adware', 'Rootkit'],
         correct: 1,
         explanation:
           'Trojan se disfarça de programa legítimo mas carrega código malicioso. O nome vem do Cavalo de Troia da mitologia grega.',
@@ -547,12 +533,7 @@ async function main() {
         module_id: module3.id,
         question:
           'Qual mecanismo protege os dados em trânsito quando você acessa um site seguro (https)?',
-        options: [
-          'Firewall',
-          'Antivírus',
-          'Criptografia (TLS/SSL)',
-          'Backup',
-        ],
+        options: ['Firewall', 'Antivírus', 'Criptografia (TLS/SSL)', 'Backup'],
         correct: 2,
         explanation:
           'O HTTPS usa criptografia TLS/SSL para proteger os dados entre seu navegador e o servidor. O cadeado na barra indica que a conexão é criptografada.',
@@ -602,9 +583,9 @@ async function main() {
   const module4 = await prisma.module.create({
     data: {
       title: 'Gestão de Riscos e COBIT',
-      label: 'FASE 04 · AULA 04',
+      label: 'FASE 04 — AULA 04',
       description:
-        'Domine gestão de riscos, matriz de risco e princípios do COBIT.',
+        'Domine gestão de riscos, matriz de risco e princípios do COBIT. Aprenda a proteger organizações com estratégia e governança!',
       icon: '\u{1F4CA}',
       gradient: 'gradient-green',
       category_color: 'bg-green/20 text-green',
@@ -634,8 +615,7 @@ async function main() {
       },
       {
         module_id: module4.id,
-        question:
-          'Quais são as 4 formas de tratamento de risco?',
+        question: 'Quais são as 4 formas de tratamento de risco?',
         options: [
           'Mitigar, aceitar, transferir, evitar',
           'Bloquear, permitir, ignorar, deletar',
@@ -653,12 +633,7 @@ async function main() {
         module_id: module4.id,
         question:
           'Empresa contrata seguro contra ciberataques. Que tratamento é?',
-        options: [
-          'Mitigar',
-          'Aceitar',
-          'Transferir',
-          'Evitar',
-        ],
+        options: ['Mitigar', 'Aceitar', 'Transferir', 'Evitar'],
         correct: 2,
         explanation:
           'Transferir = passar o impacto financeiro para terceiros (seguradora).',
@@ -668,8 +643,7 @@ async function main() {
       },
       {
         module_id: module4.id,
-        question:
-          'Na Matriz de Risco, os eixos são:',
+        question: 'Na Matriz de Risco, os eixos são:',
         options: [
           'Custo × Benefício',
           'Probabilidade × Impacto',
@@ -687,12 +661,7 @@ async function main() {
         module_id: module4.id,
         question:
           'Risco com alta probabilidade e alto impacto é classificado como:',
-        options: [
-          'Baixo',
-          'Médio',
-          'Alto',
-          'Crítico',
-        ],
+        options: ['Baixo', 'Médio', 'Alto', 'Crítico'],
         correct: 3,
         explanation:
           'Alta probabilidade + alto impacto = CRÍTICO. Ação imediata.',
@@ -704,23 +673,16 @@ async function main() {
         module_id: module4.id,
         question:
           'Empresa decide NÃO usar nuvem por risco de vazamento. Que tratamento é?',
-        options: [
-          'Mitigar',
-          'Aceitar',
-          'Transferir',
-          'Evitar',
-        ],
+        options: ['Mitigar', 'Aceitar', 'Transferir', 'Evitar'],
         correct: 3,
-        explanation:
-          'Evitar = eliminar a atividade que gera o risco.',
+        explanation: 'Evitar = eliminar a atividade que gera o risco.',
         category: 'Tratamento de Riscos',
         context: '\u2601\uFE0F Decisão estratégica',
         order: 6,
       },
       {
         module_id: module4.id,
-        question:
-          'O que é COBIT?',
+        question: 'O que é COBIT?',
         options: [
           'Um malware',
           'Um framework de governança de TI',
@@ -736,8 +698,7 @@ async function main() {
       },
       {
         module_id: module4.id,
-        question:
-          'Principal objetivo do COBIT:',
+        question: 'Principal objetivo do COBIT:',
         options: [
           'Criar websites seguros',
           'Alinhar TI aos objetivos do negócio',
@@ -745,16 +706,14 @@ async function main() {
           'Treinar programadores',
         ],
         correct: 1,
-        explanation:
-          'COBIT conecta necessidades do negócio à gestão de TI.',
+        explanation: 'COBIT conecta necessidades do negócio à gestão de TI.',
         category: 'COBIT',
         context: '\u{1F3DB}\uFE0F Governança',
         order: 8,
       },
       {
         module_id: module4.id,
-        question:
-          'Etapas da gestão de riscos na ordem:',
+        question: 'Etapas da gestão de riscos na ordem:',
         options: [
           'Planejar, executar, verificar, agir',
           'Identificar, analisar, avaliar, tratar',
@@ -762,16 +721,14 @@ async function main() {
           'Prevenir, detectar, corrigir, melhorar',
         ],
         correct: 1,
-        explanation:
-          'Identificar → Analisar → Avaliar → Tratar.',
+        explanation: 'Identificar → Analisar → Avaliar → Tratar.',
         category: 'Gestão de Riscos',
         context: null,
         order: 9,
       },
       {
         module_id: module4.id,
-        question:
-          'Por que empresas adotam o COBIT?',
+        question: 'Por que empresas adotam o COBIT?',
         options: [
           'Ter mais computadores',
           'Gerar valor com TI, gerenciar riscos e cumprir regulamentações',
@@ -790,7 +747,366 @@ async function main() {
 
   console.log(`Module "${module4.title}" created with 10 questions.`);
 
-  console.log('Seeding completed successfully!');
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Module 5: Organização de Dados + Políticas de Segurança (AULA 06)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const module5 = await prisma.module.create({
+    data: {
+      title: 'Dados e Políticas de Segurança',
+      label: 'FASE 05 — AULA 06',
+      description:
+        'Classifique informações, domine o ciclo de vida dos dados e construa políticas de segurança. Organize a defesa da organização!',
+      icon: '\u{1F4C2}',
+      gradient: 'gradient-purple',
+      category_color: 'bg-purple/10 text-purple',
+      time_per_question: 60,
+      order: 5,
+    },
+  });
+
+  await prisma.question.createMany({
+    data: [
+      {
+        module_id: module5.id,
+        question:
+          'O CPF de um cidadão brasileiro deve ser classificado como qual nível de informação?',
+        options: ['Pública', 'Interna', 'Confidencial', 'Secreta'],
+        correct: 2,
+        explanation:
+          'O CPF é um dado pessoal que identifica um indivíduo. Deve ser tratado como Confidencial, pois seu acesso indevido pode causar fraudes e danos ao titular.',
+        category: 'Classificação da Informação',
+        context: '\u{1F4CB} Dado pessoal brasileiro',
+        order: 1,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'Um edital de concurso público publicado no Diário Oficial se classifica como informação:',
+        options: ['Secreta', 'Confidencial', 'Interna', 'Pública'],
+        correct: 3,
+        explanation:
+          'Editais de concurso são documentos oficiais de acesso livre. Informação Pública pode ser acessada por qualquer pessoa sem restrição.',
+        category: 'Classificação da Informação',
+        context: '\u{1F4F0} Documento governamental',
+        order: 2,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'Qual é a ordem correta das etapas do ciclo de vida da informação?',
+        options: [
+          'Uso → Criação → Descarte → Armazenamento',
+          'Criação → Armazenamento → Uso → Compartilhamento → Arquivamento → Descarte',
+          'Descarte → Criação → Uso → Armazenamento',
+          'Armazenamento → Criação → Compartilhamento → Uso',
+        ],
+        correct: 1,
+        explanation:
+          'O ciclo de vida segue a sequência lógica: a informação é criada, armazenada, utilizada, compartilhada, arquivada e, por fim, descartada de forma segura.',
+        category: 'Ciclo de Vida',
+        context: '\u{1F504} Gestão da informação',
+        order: 3,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'Uma empresa joga HDs antigos com dados de clientes no lixo comum. Qual o problema?',
+        options: [
+          'Nenhum, os dados já são antigos',
+          'Falta de descarte seguro — dados podem ser recuperados e vazados',
+          'O único problema é ambiental',
+          'HDs antigos não armazenam dados legíveis',
+        ],
+        correct: 1,
+        explanation:
+          'Dados em HDs descartados podem ser recuperados com ferramentas especiais. O descarte seguro exige destruição física ou formatação completa com sobrescrita.',
+        category: 'Descarte Seguro',
+        context: '\u{1F5D1}\uFE0F Descarte de mídia',
+        order: 4,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'Os três componentes principais de uma política de segurança são:',
+        options: [
+          'Firewall, antivírus e backup',
+          'Normas, diretrizes e procedimentos',
+          'Senha, criptografia e VPN',
+          'Hardware, software e pessoas',
+        ],
+        correct: 1,
+        explanation:
+          'Uma política de segurança é composta por: Normas (regras obrigatórias), Diretrizes (orientações gerais) e Procedimentos (passo a passo operacional).',
+        category: 'Política de Segurança',
+        context: '\u{1F4DC} Estrutura documental',
+        order: 5,
+      },
+      {
+        module_id: module5.id,
+        question: 'A política de uso aceitável define:',
+        options: [
+          'Quais softwares a empresa deve comprar',
+          'O que funcionários podem e não podem fazer com os recursos de TI da organização',
+          'Apenas as senhas permitidas',
+          'O horário de funcionamento do setor de TI',
+        ],
+        correct: 1,
+        explanation:
+          'A política de uso aceitável (AUP) estabelece regras claras sobre o uso de computadores, internet, e-mail e outros recursos de TI no ambiente corporativo.',
+        category: 'Política de Segurança',
+        context: '\u{1F4DD} Controle ISO 5.10 — Uso aceitável de ativos',
+        order: 6,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'O código-fonte de um sistema proprietário da empresa deve ser classificado como:',
+        options: ['Público', 'Interno', 'Confidencial', 'Secreto'],
+        correct: 3,
+        explanation:
+          'Código-fonte proprietário é o ativo intelectual mais valioso de uma empresa de software. Seu vazamento pode causar danos irreparáveis — classificação Secreta.',
+        category: 'Classificação da Informação',
+        context: '\u{1F4BB} Propriedade intelectual',
+        order: 7,
+      },
+      {
+        module_id: module5.id,
+        question: 'Uma política de senhas eficaz deve exigir, no mínimo:',
+        options: [
+          'Apenas letras minúsculas',
+          'Comprimento mínimo, complexidade (maiúsculas, números, símbolos) e troca periódica',
+          'Apenas que a senha não seja "123456"',
+          'Que todos usem a mesma senha para facilitar o suporte',
+        ],
+        correct: 1,
+        explanation:
+          'Políticas de senhas robustas definem comprimento mínimo, requisitos de complexidade, proibição de reuso e periodicidade de troca. Referência: Fascículo Autenticação — CERT.br.',
+        category: 'Política de Senhas',
+        context: '\u{1F511} Fascículo Autenticação — CERT.br',
+        order: 8,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'O cardápio do restaurante da empresa é informação classificada como:',
+        options: ['Secreta', 'Confidencial', 'Interna', 'Pública'],
+        correct: 2,
+        explanation:
+          'O cardápio é de interesse apenas dos funcionários — informação Interna. Não causa danos se vazar, mas não precisa ser divulgada externamente.',
+        category: 'Classificação da Informação',
+        context: '\u{1F372} Cenário corporativo',
+        order: 9,
+      },
+      {
+        module_id: module5.id,
+        question:
+          'Segundo a ISO 27001, a classificação das informações deve considerar:',
+        options: [
+          'Apenas o custo de armazenamento',
+          'Confidencialidade, integridade, disponibilidade e requisitos das partes interessadas',
+          'Apenas a data de criação do documento',
+          'Apenas o departamento que criou a informação',
+        ],
+        correct: 1,
+        explanation:
+          'O controle 5.12 da ISO 27001 determina que a classificação deve considerar os requisitos de CID e as necessidades das partes interessadas relevantes.',
+        category: 'Normas',
+        context: '\u{1F4C4} ISO/IEC 27001 — Controle 5.12',
+        order: 10,
+      },
+    ],
+  });
+
+  console.log(`Module "${module5.title}" created with 10 questions.`);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Module 6: Segurança Física/Tecnológica + LGPD (AULA 07)
+  // ═══════════════════════════════════════════════════════════════════════════
+  const module6 = await prisma.module.create({
+    data: {
+      title: 'Segurança Física, Tecnológica e LGPD',
+      label: 'FASE 06 — AULA 07',
+      description:
+        'Proteja data centers, domine firewalls e IDS/IPS, e conheça a LGPD. Da segurança física à conformidade legal!',
+      icon: '\u{2696}\uFE0F',
+      gradient: 'gradient-cyan',
+      category_color: 'bg-cyan/10 text-black',
+      time_per_question: 60,
+      order: 6,
+    },
+  });
+
+  await prisma.question.createMany({
+    data: [
+      {
+        module_id: module6.id,
+        question:
+          'Biometria, crachás magnéticos e catracas eletrônicas são exemplos de:',
+        options: [
+          'Segurança de rede',
+          'Controle de acesso físico',
+          'Criptografia avançada',
+          'Política de senhas',
+        ],
+        correct: 1,
+        explanation:
+          'Controle de acesso físico usa mecanismos como biometria, crachás, catracas e portarias para restringir a entrada de pessoas a áreas protegidas.',
+        category: 'Segurança Física',
+        context: '\u{1F3E2} Controle de acesso',
+        order: 1,
+      },
+      {
+        module_id: module6.id,
+        question: 'Um data center profissional precisa de climatização porque:',
+        options: [
+          'Deixa o ambiente mais confortável para os técnicos',
+          'Servidores geram muito calor e podem danificar sem controle de temperatura',
+          'É exigência estética das normas ISO',
+          'Facilita a instalação de câmeras CFTV',
+        ],
+        correct: 1,
+        explanation:
+          'Servidores geram calor intenso. Sem climatização adequada (18-27°C), equipamentos superaquecem, causando falhas, perda de dados e indisponibilidade.',
+        category: 'Segurança Física',
+        context: '\u{1F321}\uFE0F Data center',
+        order: 2,
+      },
+      {
+        module_id: module6.id,
+        question: 'Qual a diferença entre IDS e IPS?',
+        options: [
+          'IDS bloqueia; IPS só detecta',
+          'IDS detecta intrusões e alerta; IPS detecta E bloqueia automaticamente',
+          'São a mesma coisa com nomes diferentes',
+          'IDS é hardware; IPS é software',
+        ],
+        correct: 1,
+        explanation:
+          'IDS (Intrusion Detection System) apenas detecta e notifica. IPS (Intrusion Prevention System) detecta e age automaticamente para bloquear a ameaça.',
+        category: 'Segurança Tecnológica',
+        context: '\u{1F6A8} Detecção e prevenção',
+        order: 3,
+      },
+      {
+        module_id: module6.id,
+        question: 'Uma VPN (Virtual Private Network) serve para:',
+        options: [
+          'Aumentar a velocidade da internet',
+          'Criar um túnel criptografado para comunicação segura em redes públicas',
+          'Substituir o firewall',
+          'Bloquear vírus automaticamente',
+        ],
+        correct: 1,
+        explanation:
+          'VPN cria um "túnel" criptografado entre o dispositivo e a rede, protegendo dados mesmo em Wi-Fi público. Essencial para trabalho remoto.',
+        category: 'Segurança Tecnológica',
+        context: '\u{1F310} Rede privada virtual',
+        order: 4,
+      },
+      {
+        module_id: module6.id,
+        question: 'Segundo a LGPD, "dado pessoal" é:',
+        options: [
+          'Qualquer informação armazenada em computador',
+          'Informação relacionada a pessoa natural identificada ou identificável',
+          'Apenas CPF e RG',
+          'Somente dados bancários',
+        ],
+        correct: 1,
+        explanation:
+          'A LGPD define dado pessoal de forma ampla: qualquer informação que identifique ou possa identificar uma pessoa natural — nome, e-mail, IP, localização, etc.',
+        category: 'LGPD',
+        context: '\u{1F4DC} Lei n\u00BA 13.709/2018',
+        order: 5,
+      },
+      {
+        module_id: module6.id,
+        question: 'Na LGPD, qual a diferença entre "Controlador" e "Operador"?',
+        options: [
+          'Controlador é o dono dos dados; Operador é o titular',
+          'Controlador decide como tratar os dados; Operador executa o tratamento em nome do Controlador',
+          'São sinônimos na lei',
+          'Controlador é pessoa física; Operador é pessoa jurídica',
+        ],
+        correct: 1,
+        explanation:
+          'O Controlador toma as decisões sobre o tratamento de dados pessoais. O Operador realiza o tratamento seguindo as instruções do Controlador.',
+        category: 'LGPD',
+        context: '\u{1F465} Agentes de tratamento',
+        order: 6,
+      },
+      {
+        module_id: module6.id,
+        question: 'Dado sensível na LGPD inclui informações sobre:',
+        options: [
+          'Nome e endereço',
+          'Origem racial, convicção religiosa, opinião política, dado de saúde ou biometria',
+          'Apenas dados bancários',
+          'Qualquer dado em formato digital',
+        ],
+        correct: 1,
+        explanation:
+          'Dados sensíveis têm proteção reforçada na LGPD: origem racial/étnica, convicção religiosa, opinião política, saúde, vida sexual, genético e biométrico.',
+        category: 'LGPD',
+        context: '\u26A0\uFE0F Proteção reforçada',
+        order: 7,
+      },
+      {
+        module_id: module6.id,
+        question: 'Qual sanção a ANPD pode aplicar por violação à LGPD?',
+        options: [
+          'Apenas advertência verbal',
+          'Multa de até R$ 50 milhões por infração, bloqueio de dados e publicização da infração',
+          'Apenas suspensão do CNPJ',
+          'Não há sanções previstas',
+        ],
+        correct: 1,
+        explanation:
+          'A ANPD pode aplicar: advertência, multa de até 2% do faturamento (limitada a R$ 50 milhões por infração), bloqueio e eliminação dos dados, e publicização.',
+        category: 'LGPD',
+        context: '\u{1F4B0} Penalidades — ANPD',
+        order: 8,
+      },
+      {
+        module_id: module6.id,
+        question:
+          'O titular dos dados tem direito a solicitar, segundo a LGPD:',
+        options: [
+          'Apenas ver seus dados',
+          'Acesso, correção, exclusão, portabilidade e revogação do consentimento',
+          'Apenas a exclusão dos dados',
+          'Nenhum direito se já consentiu',
+        ],
+        correct: 1,
+        explanation:
+          'A LGPD garante ao titular amplos direitos: confirmação de tratamento, acesso, correção, anonimização, portabilidade, exclusão e revogação do consentimento.',
+        category: 'LGPD',
+        context: '\u{1F464} Direitos do titular',
+        order: 9,
+      },
+      {
+        module_id: module6.id,
+        question:
+          'CFTV (Circuito Fechado de TV) é um mecanismo de segurança que atua na:',
+        options: [
+          'Criptografia de dados em trânsito',
+          'Monitoramento e vigilância de ambientes físicos',
+          'Filtragem de tráfego de rede',
+          'Autenticação de usuários em sistemas',
+        ],
+        correct: 1,
+        explanation:
+          'CFTV monitora e grava imagens de ambientes físicos, funcionando como controle preventivo (inibe ações) e detectivo (registra evidências de incidentes).',
+        category: 'Segurança Física',
+        context: '\u{1F4F9} Vigilância',
+        order: 10,
+      },
+    ],
+  });
+
+  console.log(`Module "${module6.title}" created with 10 questions.`);
+
+  console.log('Seeding completed successfully! 6 modules, 60 questions total.');
 }
 
 main()

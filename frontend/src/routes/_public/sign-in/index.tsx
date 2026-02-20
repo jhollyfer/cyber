@@ -1,7 +1,8 @@
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import axios from 'axios';
-import { Shield } from 'lucide-react';
+import { Eye, EyeOff, Shield } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 
@@ -42,6 +43,7 @@ function phoneMask(value: string): string {
 export default function SignInPage() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -80,7 +82,7 @@ export default function SignInPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Shield className="w-10 h-10 text-primary" />
-            <h1 className="text-3xl font-bold gradient-text">CyberGuardian</h1>
+            <h1 className="text-3xl font-bold text-primary">CyberGuardian</h1>
           </div>
           <p className="text-muted-foreground">Entre na sua conta para continuar</p>
         </div>
@@ -140,15 +142,25 @@ export default function SignInPage() {
                 >
                   {(field) => (
                     <>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Digite sua senha"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        className="mt-1.5"
-                      />
+                      <div className="relative mt-1.5">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Digite sua senha"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground transition-colors"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                       {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
                         <p className="text-destructive text-xs mt-1.5">
                           {typeof field.state.meta.errors[0] === 'string' ? field.state.meta.errors[0] : field.state.meta.errors[0]?.message}

@@ -7,16 +7,16 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getGradientClass(gradient: string): string {
   const map: Record<string, string> = {
-    'gradient-purple': 'bg-gradient-purple',
-    'gradient-pink': 'bg-gradient-pink',
-    'gradient-cyan': 'bg-gradient-cyan',
-    'gradient-green': 'bg-gradient-green',
-    purple: 'bg-gradient-purple',
-    pink: 'bg-gradient-pink',
-    cyan: 'bg-gradient-cyan',
-    green: 'bg-gradient-green',
+    'gradient-purple': 'bg-primary',
+    'gradient-pink': 'bg-destructive',
+    'gradient-cyan': 'bg-secondary',
+    'gradient-green': 'bg-success',
+    purple: 'bg-primary',
+    pink: 'bg-destructive',
+    cyan: 'bg-secondary',
+    green: 'bg-success',
   };
-  return map[gradient] || 'bg-gradient-purple';
+  return map[gradient] || 'bg-primary';
 }
 
 export function formatNota(nota: number | null): string {
@@ -33,11 +33,11 @@ export function formatPhone(phone: string): string {
 }
 
 export function getLetterRank(nota: number): { letter: string; color: string; bgColor: string } {
-  if (nota >= 9) return { letter: 'S+', color: 'text-cyber-yellow', bgColor: 'bg-cyber-yellow/10 border-cyber-yellow/30' };
-  if (nota >= 8) return { letter: 'A', color: 'text-cyber-green', bgColor: 'bg-cyber-green/10 border-cyber-green/30' };
-  if (nota >= 7) return { letter: 'B', color: 'text-cyber-cyan', bgColor: 'bg-cyber-cyan/10 border-cyber-cyan/30' };
-  if (nota >= 6) return { letter: 'C', color: 'text-cyber-purple', bgColor: 'bg-cyber-purple/10 border-cyber-purple/30' };
-  return { letter: 'D', color: 'text-cyber-red', bgColor: 'bg-cyber-red/10 border-cyber-red/30' };
+  if (nota >= 9) return { letter: 'S+', color: 'text-warning', bgColor: 'bg-warning/10 border-warning/30' };
+  if (nota >= 8) return { letter: 'A', color: 'text-success', bgColor: 'bg-success/10 border-success/30' };
+  if (nota >= 7) return { letter: 'B', color: 'text-secondary', bgColor: 'bg-secondary/10 border-secondary/30' };
+  if (nota >= 6) return { letter: 'C', color: 'text-primary', bgColor: 'bg-primary/10 border-primary/30' };
+  return { letter: 'D', color: 'text-destructive', bgColor: 'bg-destructive/10 border-destructive/30' };
 }
 
 export function getResultEmoji(percentage: number): string {

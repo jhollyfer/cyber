@@ -56,11 +56,11 @@ function AdminStudentsPage(): React.ReactElement {
   }
 
   function getNotaColor(nota: number): string {
-    return nota >= 6 ? 'text-cyber-green' : 'text-cyber-red';
+    return nota >= 6 ? 'text-success' : 'text-destructive';
   }
 
   function getNotaBgColor(nota: number): string {
-    return nota >= 6 ? 'bg-cyber-green/10' : 'bg-cyber-red/10';
+    return nota >= 6 ? 'bg-success/10' : 'bg-destructive/10';
   }
 
   const filteredStudents = students?.filter((student) =>
@@ -89,7 +89,7 @@ function AdminStudentsPage(): React.ReactElement {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">Alunos</h1>
+          <h1 className="text-3xl font-bold text-primary">Alunos</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {students?.length ?? 0} aluno{students?.length !== 1 ? 's' : ''}{' '}
             cadastrado{students?.length !== 1 ? 's' : ''}

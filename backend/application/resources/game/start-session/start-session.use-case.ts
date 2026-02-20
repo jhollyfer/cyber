@@ -15,7 +15,7 @@ type SafeQuestion = Omit<IQuestion, 'correct' | 'explanation'>;
 
 type Response = Either<
   HTTPException,
-  { session: IGameSession; questions: SafeQuestion[] }
+  { session: IGameSession; questions: SafeQuestion[]; resumed: boolean }
 >;
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -81,15 +81,49 @@ export default class StartSessionUseCase {
         }
       }
 
-      const session = await this.gameSessionRepository.create({
-        user_id: payload.user_id,
-        module_id: payload.module_id,
-      });
-
       const questions = await this.questionRepository.findByModuleId(
         payload.module_id,
         true,
       );
+
+      // Try to resume an unfinished session
+      const unfinished = await this.gameSessionRepository.findUnfinishedByUserAndModule(
+        payload.user_id,
+        payload.module_id,
+      );
+
+      if (unfinished) {
+        const answeredIds = new Set(unfinished.answers.map((a) => a.question_id));
+        const remaining = questions.filter((q) => !answeredIds.has(q.id));
+
+        if (remaining.length > 0) {
+          const shuffledRemaining = shuffleArray(remaining);
+          const safeQuestions: SafeQuestion[] = shuffledRemaining.map(
+            ({ correct, explanation, ...rest }) => rest,
+          );
+          const { answers: _, ...sessionWithoutAnswers } = unfinished;
+          return right({ session: sessionWithoutAnswers, questions: safeQuestions, resumed: true });
+        }
+
+        // All questions answered — auto-finalize the old session
+        const totalQuestions = questions.length;
+        const nota =
+          totalQuestions > 0
+            ? Math.round((unfinished.correct_answers / totalQuestions) * 10 * 1000) / 1000
+            : 0;
+        await this.gameSessionRepository.update({
+          id: unfinished.id,
+          finished: true,
+          nota,
+          finished_at: new Date(),
+        });
+      }
+
+      // Create a new session
+      const session = await this.gameSessionRepository.create({
+        user_id: payload.user_id,
+        module_id: payload.module_id,
+      });
 
       const shuffledQuestions = shuffleArray(questions);
 
@@ -97,7 +131,7 @@ export default class StartSessionUseCase {
         ({ correct, explanation, ...rest }) => rest,
       );
 
-      return right({ session, questions: safeQuestions });
+      return right({ session, questions: safeQuestions, resumed: false });
     } catch (error) {
       console.error(error);
       return left(

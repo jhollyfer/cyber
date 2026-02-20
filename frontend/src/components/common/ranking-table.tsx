@@ -40,7 +40,9 @@ export default function RankingTable({
       <Card className="text-center py-12">
         <CardContent>
           <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">Nenhum aluno completou modulos ainda.</p>
+          <p className="text-muted-foreground">
+            Nenhum aluno completou modulos ainda.
+          </p>
         </CardContent>
       </Card>
     );
@@ -57,12 +59,8 @@ export default function RankingTable({
               <TableHead className="px-6 py-4 text-center">
                 Nota Media
               </TableHead>
-              <TableHead className="px-6 py-4 text-center">
-                Fases
-              </TableHead>
-              <TableHead className="px-6 py-4 text-center">
-                Pontuacao
-              </TableHead>
+              <TableHead className="px-6 py-4 text-center">Fases</TableHead>
+              <TableHead className="px-6 py-4 text-center">Pontuacao</TableHead>
               <TableHead className="px-6 py-4 text-center">
                 Melhor Sequencia
               </TableHead>
@@ -80,7 +78,9 @@ export default function RankingTable({
                 <TableCell className="px-6 py-4">
                   <span className="text-lg">
                     {getMedalEmoji(index) || (
-                      <span className="text-muted-foreground text-sm">{index + 1}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {index + 1}
+                      </span>
                     )}
                   </span>
                 </TableCell>
@@ -93,9 +93,7 @@ export default function RankingTable({
                   >
                     {entry.name}
                     {entry.user_id === currentUserId && (
-                      <span className="ml-2 text-xs text-primary">
-                        (voce)
-                      </span>
+                      <span className="ml-2 text-xs text-primary">(voce)</span>
                     )}
                   </span>
                 </TableCell>
@@ -103,7 +101,9 @@ export default function RankingTable({
                   <span
                     className={cn(
                       'font-bold',
-                      entry.average_nota >= 6 ? 'text-cyber-green' : 'text-cyber-red',
+                      entry.average_nota >= 6
+                        ? 'text-success'
+                        : 'text-destructive',
                     )}
                   >
                     {formatNota(entry.average_nota)}
@@ -120,8 +120,8 @@ export default function RankingTable({
                               className={cn(
                                 'font-bold',
                                 mn.nota >= 6
-                                  ? 'bg-cyber-green/10 text-cyber-green border-cyber-green/30'
-                                  : 'bg-cyber-red/10 text-cyber-red border-cyber-red/30',
+                                  ? 'bg-success/10 text-success border-success/30'
+                                  : 'bg-destructive/10 text-destructive border-destructive/30',
                               )}
                             >
                               F{i + 1}: {formatNota(mn.nota)}

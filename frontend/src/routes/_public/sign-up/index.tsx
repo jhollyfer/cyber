@@ -1,7 +1,8 @@
 import { useForm } from '@tanstack/react-form';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import axios from 'axios';
-import { Shield } from 'lucide-react';
+import { Eye, EyeOff, Shield } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 
@@ -18,9 +19,17 @@ export const Route = createFileRoute('/_public/sign-up/')({
   head: () => ({
     meta: [
       { title: 'Cadastro - CyberGuardian' },
-      { name: 'description', content: 'Crie sua conta gratuita no CyberGuardian e comece a aprender sobre seguranca da informacao' },
+      {
+        name: 'description',
+        content:
+          'Crie sua conta gratuita no CyberGuardian e comece a aprender sobre seguranca da informacao',
+      },
       { property: 'og:title', content: 'Cadastro - CyberGuardian' },
-      { property: 'og:description', content: 'Crie sua conta gratuita no CyberGuardian e comece a aprender sobre seguranca da informacao' },
+      {
+        property: 'og:description',
+        content:
+          'Crie sua conta gratuita no CyberGuardian e comece a aprender sobre seguranca da informacao',
+      },
       { property: 'og:type', content: 'website' },
     ],
   }),
@@ -43,6 +52,7 @@ function phoneMask(value: string): string {
 export default function SignUpPage() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -72,7 +82,10 @@ export default function SignUpPage() {
         navigate({ to: '/' });
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          toast.error(err.response?.data?.message ?? 'Erro ao criar conta. Tente novamente.');
+          toast.error(
+            err.response?.data?.message ??
+              'Erro ao criar conta. Tente novamente.',
+          );
         } else {
           toast.error('Erro ao criar conta. Tente novamente.');
         }
@@ -87,7 +100,7 @@ export default function SignUpPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Shield className="w-10 h-10 text-primary" />
-            <h1 className="text-3xl font-bold gradient-text">CyberGuardian</h1>
+            <h1 className="text-3xl font-bold text-primary">CyberGuardian</h1>
           </div>
           <p className="text-muted-foreground">Crie sua conta para comecar</p>
         </div>
@@ -104,9 +117,7 @@ export default function SignUpPage() {
               className="space-y-5"
             >
               <div>
-                <Label htmlFor="name">
-                  Nome
-                </Label>
+                <Label htmlFor="name">Nome</Label>
                 <form.Field
                   name="name"
                   validators={{
@@ -124,20 +135,21 @@ export default function SignUpPage() {
                         onBlur={field.handleBlur}
                         className="mt-1.5"
                       />
-                      {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-                        <p className="text-destructive text-xs mt-1.5">
-                          {typeof field.state.meta.errors[0] === 'string' ? field.state.meta.errors[0] : field.state.meta.errors[0]?.message}
-                        </p>
-                      )}
+                      {field.state.meta.isTouched &&
+                        field.state.meta.errors.length > 0 && (
+                          <p className="text-destructive text-xs mt-1.5">
+                            {typeof field.state.meta.errors[0] === 'string'
+                              ? field.state.meta.errors[0]
+                              : field.state.meta.errors[0]?.message}
+                          </p>
+                        )}
                     </>
                   )}
                 </form.Field>
               </div>
 
               <div>
-                <Label htmlFor="phone">
-                  Telefone
-                </Label>
+                <Label htmlFor="phone">Telefone</Label>
                 <form.Field
                   name="phone"
                   validators={{
@@ -151,63 +163,89 @@ export default function SignUpPage() {
                         type="tel"
                         placeholder="(00) 00000-0000"
                         value={field.state.value}
-                        onChange={(e) => field.handleChange(phoneMask(e.target.value))}
+                        onChange={(e) =>
+                          field.handleChange(phoneMask(e.target.value))
+                        }
                         onBlur={field.handleBlur}
                         maxLength={15}
                         className="mt-1.5"
                       />
-                      {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-                        <p className="text-destructive text-xs mt-1.5">
-                          {typeof field.state.meta.errors[0] === 'string' ? field.state.meta.errors[0] : field.state.meta.errors[0]?.message}
-                        </p>
-                      )}
+                      {field.state.meta.isTouched &&
+                        field.state.meta.errors.length > 0 && (
+                          <p className="text-destructive text-xs mt-1.5">
+                            {typeof field.state.meta.errors[0] === 'string'
+                              ? field.state.meta.errors[0]
+                              : field.state.meta.errors[0]?.message}
+                          </p>
+                        )}
                     </>
                   )}
                 </form.Field>
               </div>
 
               <div>
-                <Label htmlFor="password">
-                  Senha
-                </Label>
+                <Label htmlFor="password">Senha</Label>
                 <form.Field
                   name="password"
                   validators={{
                     onChange: z
                       .string()
                       .min(6, 'Senha deve ter no minimo 6 caracteres')
-                      .regex(PASSWORD_REGEX, 'Senha deve ter 1 maiuscula, 1 minuscula, 1 numero e 1 caractere especial'),
+                      .regex(
+                        PASSWORD_REGEX,
+                        'Senha deve ter 1 maiuscula, 1 minuscula, 1 numero e 1 caractere especial',
+                      ),
                   }}
                 >
                   {(field) => (
                     <>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Crie uma senha forte"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        className="mt-1.5"
-                      />
+                      <div className="relative mt-1.5">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Crie uma senha forte"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          onBlur={field.handleBlur}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground transition-colors"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                       {field.state.meta.errors.length > 0 && (
                         <p className="text-destructive text-xs mt-1.5">
-                          {typeof field.state.meta.errors[0] === 'string' ? field.state.meta.errors[0] : field.state.meta.errors[0]?.message}
+                          {typeof field.state.meta.errors[0] === 'string'
+                            ? field.state.meta.errors[0]
+                            : field.state.meta.errors[0]?.message}
                         </p>
                       )}
-                      <p className="text-muted-foreground text-xs mt-1.5">
-                        Minimo 6 caracteres: 1 maiuscula, 1 minuscula, 1 numero, 1 especial
-                      </p>
                     </>
                   )}
                 </form.Field>
               </div>
 
-              <form.Subscribe selector={(state) => [state.isSubmitting, state.values.password] as const}>
+              <form.Subscribe
+                selector={(state) =>
+                  [state.isSubmitting, state.values.password] as const
+                }
+              >
                 {([isSubmitting, password]) => (
                   <Button
                     type="submit"
-                    disabled={isSubmitting || (password.length > 0 && !PASSWORD_REGEX.test(password))}
+                    disabled={
+                      isSubmitting ||
+                      (password.length > 0 && !PASSWORD_REGEX.test(password))
+                    }
                     className="w-full"
                   >
                     {isSubmitting ? 'Criando conta...' : 'Criar conta'}

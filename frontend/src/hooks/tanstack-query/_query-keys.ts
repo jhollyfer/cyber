@@ -22,6 +22,7 @@ export const queryKeys = {
     sessions: () => [...queryKeys.game.all(), 'session'] as const,
     session: (id: string) => [...queryKeys.game.sessions(), id] as const,
     bestSessions: () => [...queryKeys.game.all(), 'best-sessions'] as const,
+    unfinishedSessions: () => [...queryKeys.game.all(), 'unfinished-sessions'] as const,
   },
   ranking: {
     all: () => ['ranking'] as const,

@@ -114,9 +114,9 @@ function AdminDashboardPage() {
       label: 'Total de Alunos',
       value: stats?.total_students ?? 0,
       icon: Users,
-      color: 'text-cyber-green',
-      bgColor: 'bg-cyber-green/10',
-      borderColor: 'border-cyber-green/20',
+      color: 'text-success',
+      bgColor: 'bg-success/10',
+      borderColor: 'border-success/20',
     },
     {
       label: 'Media Geral',
@@ -124,16 +124,16 @@ function AdminDashboardPage() {
       icon: BarChart3,
       color:
         stats && stats.average_nota >= 6
-          ? 'text-cyber-green'
-          : 'text-cyber-red',
+          ? 'text-success'
+          : 'text-destructive',
       bgColor:
         stats && stats.average_nota >= 6
-          ? 'bg-cyber-green/10'
-          : 'bg-cyber-red/10',
+          ? 'bg-success/10'
+          : 'bg-destructive/10',
       borderColor:
         stats && stats.average_nota >= 6
-          ? 'border-cyber-green/20'
-          : 'border-cyber-red/20',
+          ? 'border-success/20'
+          : 'border-destructive/20',
     },
     {
       label: 'Taxa de Aprovacao',
@@ -141,22 +141,22 @@ function AdminDashboardPage() {
       icon: TrendingUp,
       color:
         stats && stats.approval_rate >= 70
-          ? 'text-cyber-green'
+          ? 'text-success'
           : stats && stats.approval_rate >= 50
-            ? 'text-cyber-yellow'
-            : 'text-cyber-red',
+            ? 'text-warning'
+            : 'text-destructive',
       bgColor:
         stats && stats.approval_rate >= 70
-          ? 'bg-cyber-green/10'
+          ? 'bg-success/10'
           : stats && stats.approval_rate >= 50
-            ? 'bg-cyber-yellow/10'
-            : 'bg-cyber-red/10',
+            ? 'bg-warning/10'
+            : 'bg-destructive/10',
       borderColor:
         stats && stats.approval_rate >= 70
-          ? 'border-cyber-green/20'
+          ? 'border-success/20'
           : stats && stats.approval_rate >= 50
-            ? 'border-cyber-yellow/20'
-            : 'border-cyber-red/20',
+            ? 'border-warning/20'
+            : 'border-destructive/20',
     },
     {
       label: 'Modulo Mais Dificil',
@@ -165,16 +165,16 @@ function AdminDashboardPage() {
         ? `Media: ${formatNota(stats.hardest_module.average_nota)}`
         : undefined,
       icon: AlertTriangle,
-      color: 'text-cyber-red',
-      bgColor: 'bg-cyber-red/10',
-      borderColor: 'border-cyber-red/20',
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/10',
+      borderColor: 'border-destructive/20',
     },
   ];
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold gradient-text mb-2">
+        <h1 className="text-3xl font-bold text-primary mb-2">
           Painel Administrativo
         </h1>
         <p className="text-muted-foreground">
@@ -211,7 +211,7 @@ function AdminDashboardPage() {
       <Card className="mb-8">
         <CardContent className="pt-6">
           <div className="flex items-center gap-3 mb-2">
-            <GraduationCap className="w-5 h-5 text-cyber-purple" />
+            <GraduationCap className="w-5 h-5 text-primary" />
             <span className="text-muted-foreground text-sm">
               Total de Sessoes Finalizadas
             </span>
@@ -223,13 +223,13 @@ function AdminDashboardPage() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="group hover:border-cyber-purple/50 transition-all duration-200" asChild>
+        <Card className="group hover:border-primary/50 transition-all duration-200" asChild>
           <Link to="/admin/modules">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-cyber-purple/10">
-                    <BookOpen className="w-6 h-6 text-cyber-purple" />
+                  <div className="p-3 rounded-xl bg-primary/10">
+                    <BookOpen className="w-6 h-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">
@@ -240,19 +240,19 @@ function AdminDashboardPage() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-cyber-purple transition-colors" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
             </CardContent>
           </Link>
         </Card>
 
-        <Card className="group hover:border-cyber-green/50 transition-all duration-200" asChild>
+        <Card className="group hover:border-success/50 transition-all duration-200" asChild>
           <Link to="/admin/students">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-cyber-green/10">
-                    <Users className="w-6 h-6 text-cyber-green" />
+                  <div className="p-3 rounded-xl bg-success/10">
+                    <Users className="w-6 h-6 text-success" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">Ver Alunos</h3>
@@ -261,7 +261,7 @@ function AdminDashboardPage() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-cyber-green transition-colors" />
+                <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-success transition-colors" />
               </div>
             </CardContent>
           </Link>

@@ -71,15 +71,8 @@ export default class FinishSessionUseCase {
           session.module_id,
         );
 
-      let isBest = false;
-
-      if (!currentBest || nota >= (currentBest.nota ?? 0)) {
-        await this.gameSessionRepository.clearBestFlag(
-          payload.user_id,
-          session.module_id,
-        );
-        isBest = true;
-      }
+      // Primeiro resultado é o que vale pro ranking — não sobrescrever
+      const isBest = !currentBest;
 
       const updatedSession = await this.gameSessionRepository.update({
         id: payload.session_id,

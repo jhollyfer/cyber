@@ -71,6 +71,30 @@ export default class GameSessionPrismaRepository extends GameSessionContractRepo
     });
   }
 
+  async findUnfinishedByUserAndModule(
+    userId: string,
+    moduleId: string,
+  ): Promise<(IGameSession & { answers: { question_id: string }[] }) | null> {
+    const session = await prisma.gameSession.findFirst({
+      where: { user_id: userId, module_id: moduleId, finished: false },
+      orderBy: { created_at: 'desc' },
+      include: { answers: { select: { question_id: true } } },
+    });
+    if (!session) return null;
+    return {
+      ...mapSession(session as unknown as Record<string, unknown>),
+      answers: session.answers,
+    };
+  }
+
+  async findUnfinishedByUser(userId: string): Promise<IGameSession[]> {
+    const sessions = await prisma.gameSession.findMany({
+      where: { user_id: userId, finished: false },
+      orderBy: { created_at: 'desc' },
+    });
+    return sessions.map((s) => mapSession(s as unknown as Record<string, unknown>));
+  }
+
   async findBestSessionsByUser(userId: string): Promise<IGameSession[]> {
     const sessions = await prisma.gameSession.findMany({
       where: { user_id: userId, is_best: true, finished: true },
