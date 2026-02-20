@@ -7,7 +7,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
-    nitro(),
+    nitro({
+      preset: 'node-server',
+    }),
     tsconfigPaths({
       projects: ['./tsconfig.json'],
     }),
