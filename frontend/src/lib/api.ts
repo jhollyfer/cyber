@@ -1,14 +1,27 @@
 import axios from 'axios';
 
-import { env } from '@/env';
+import { getApiBaseUrl } from '@/lib/get-api-config';
 import { useAuthStore } from '@/stores/authentication';
 
+let resolvedBaseUrl: string | null = null;
+let baseUrlPromise: Promise<string> | null = null;
+
 export const api = axios.create({
-  baseURL: env.VITE_API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+api.interceptors.request.use(async (config) => {
+  if (!resolvedBaseUrl) {
+    if (!baseUrlPromise) {
+      baseUrlPromise = getApiBaseUrl();
+    }
+    resolvedBaseUrl = await baseUrlPromise;
+  }
+  config.baseURL = resolvedBaseUrl;
+  return config;
 });
 
 const PUBLIC_PATHS = ['/sign-in', '/sign-up', '/ranking'];

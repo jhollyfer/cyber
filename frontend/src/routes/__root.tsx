@@ -11,21 +11,13 @@ import RoutePending from '@/components/common/route-pending';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import appCss from '@/index.css?url';
-import { api } from '@/lib/api';
-import { getApiBaseUrl } from '@/lib/get-api-config';
 import type { RouterContext } from '@/router';
 import { useAuthStore } from '@/stores/authentication';
 
-let apiConfigured = false;
-
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
-    if (!apiConfigured) {
-      api.defaults.baseURL = await getApiBaseUrl();
-      apiConfigured = true;
-    }
-
     const state = useAuthStore.getState();
+
     if (!state.isAuthenticated && state.isLoading) {
       await state.fetchUser();
     }
