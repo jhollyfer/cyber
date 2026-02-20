@@ -61,7 +61,7 @@ function RootDocument(): React.ReactElement {
   return (
     <html
       lang="pt-BR"
-      className="dark"
+      // className="dark"
     >
       <head>
         <HeadContent />
