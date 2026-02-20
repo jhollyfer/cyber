@@ -1,0 +1,81 @@
+name: Deploy to VPS (Main)
+
+on:
+  workflow_call:
+    secrets:
+      VPS_HOST:
+        required: true
+      VPS_USER:
+        required: true
+      VPS_SSH_KEY:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true
+      DB_PASSWORD:
+        required: true
+      JWT_PRIVATE_KEY:
+        required: true
+      JWT_PUBLIC_KEY:
+        required: true
+      COOKIE_SECRET:
+        required: true
+      EMAIL_PROVIDER_PASSWORD:
+        required: true
+      EMAIL_PROVIDER_USER:
+        required: true
+      EMAIL_PROVIDER_HOST:
+        required: true
+      EMAIL_PROVIDER_PORT:
+        required: true
+      DATABASE_URL:
+        required: true
+      ADMINISTRATOR_EMAIL:
+        required: true
+      ADMINISTRATOR_PASSWORD:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.VPS_USER }}/matiscraft/applications/main
+
+            # Criar arquivo .env com as variáveis necessárias para o docker-compose.production.yml
+            cat > .env << EOF
+            DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            DB_USERNAME=matis
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=matis
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            JWT_PRIVATE_KEY=${{ secrets.JWT_PRIVATE_KEY }}
+            JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}
+            COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}
+            EMAIL_PROVIDER_PASSWORD=${{ secrets.EMAIL_PROVIDER_PASSWORD }}
+            EMAIL_PROVIDER_USER=${{ secrets.EMAIL_PROVIDER_USER }}
+            EMAIL_PROVIDER_HOST=${{ secrets.EMAIL_PROVIDER_HOST }}
+            EMAIL_PROVIDER_PORT=${{ secrets.EMAIL_PROVIDER_PORT }}
+            ADMINISTRATOR_EMAIL=${{ secrets.ADMINISTRATOR_EMAIL }}
+            ADMINISTRATOR_PASSWORD=${{ secrets.ADMINISTRATOR_PASSWORD }}
+            EOF
+
+            echo "Environment variables configured successfully. Deploying..."
+
+            # Deploy - Forçar pull fresh e recreate de containers
+            docker compose -f docker-compose.production.yml pull
+            docker image prune -f || true
+            docker compose -f docker-compose.production.yml up -d --force-recreate
+
+            # Aguardar container da API estar pronto
+            sleep 5
+
+            echo "Deploy completed successfully!"

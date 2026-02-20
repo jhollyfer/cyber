@@ -9,8 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PublicRouteRouteImport } from './routes/_public/route'
-import { Route as PrivateRouteRouteImport } from './routes/_private/route'
+import { Route as PublicLayoutRouteImport } from './routes/_public/layout'
+import { Route as PrivateLayoutRouteImport } from './routes/_private/layout'
 import { Route as RankingIndexRouteImport } from './routes/ranking/index'
 import { Route as PrivateIndexRouteImport } from './routes/_private/index'
 import { Route as PublicSignUpIndexRouteImport } from './routes/_public/sign-up/index'
@@ -22,11 +22,11 @@ import { Route as PrivateAdminStudentsIndexRouteImport } from './routes/_private
 import { Route as PrivateAdminModulesIndexRouteImport } from './routes/_private/admin/modules/index'
 import { Route as PrivateAdminModulesModuleIdIndexRouteImport } from './routes/_private/admin/modules/$moduleId/index'
 
-const PublicRouteRoute = PublicRouteRouteImport.update({
+const PublicLayoutRoute = PublicLayoutRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivateRouteRoute = PrivateRouteRouteImport.update({
+const PrivateLayoutRoute = PrivateLayoutRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -38,22 +38,22 @@ const RankingIndexRoute = RankingIndexRouteImport.update({
 const PrivateIndexRoute = PrivateIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PrivateRouteRoute,
+  getParentRoute: () => PrivateLayoutRoute,
 } as any)
 const PublicSignUpIndexRoute = PublicSignUpIndexRouteImport.update({
   id: '/sign-up/',
   path: '/sign-up/',
-  getParentRoute: () => PublicRouteRoute,
+  getParentRoute: () => PublicLayoutRoute,
 } as any)
 const PublicSignInIndexRoute = PublicSignInIndexRouteImport.update({
   id: '/sign-in/',
   path: '/sign-in/',
-  getParentRoute: () => PublicRouteRoute,
+  getParentRoute: () => PublicLayoutRoute,
 } as any)
 const PrivateAdminIndexRoute = PrivateAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
-  getParentRoute: () => PrivateRouteRoute,
+  getParentRoute: () => PrivateLayoutRoute,
 } as any).lazy(() =>
   import('./routes/_private/admin/index.lazy').then((d) => d.Route),
 )
@@ -61,7 +61,7 @@ const PrivateResultSessionIdIndexRoute =
   PrivateResultSessionIdIndexRouteImport.update({
     id: '/result/$sessionId/',
     path: '/result/$sessionId/',
-    getParentRoute: () => PrivateRouteRoute,
+    getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_private/result/$sessionId/index.lazy').then(
       (d) => d.Route,
@@ -71,7 +71,7 @@ const PrivateGameModuleIdIndexRoute =
   PrivateGameModuleIdIndexRouteImport.update({
     id: '/game/$moduleId/',
     path: '/game/$moduleId/',
-    getParentRoute: () => PrivateRouteRoute,
+    getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_private/game/$moduleId/index.lazy').then((d) => d.Route),
   )
@@ -79,7 +79,7 @@ const PrivateAdminStudentsIndexRoute =
   PrivateAdminStudentsIndexRouteImport.update({
     id: '/admin/students/',
     path: '/admin/students/',
-    getParentRoute: () => PrivateRouteRoute,
+    getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_private/admin/students/index.lazy').then((d) => d.Route),
   )
@@ -87,7 +87,7 @@ const PrivateAdminModulesIndexRoute =
   PrivateAdminModulesIndexRouteImport.update({
     id: '/admin/modules/',
     path: '/admin/modules/',
-    getParentRoute: () => PrivateRouteRoute,
+    getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_private/admin/modules/index.lazy').then((d) => d.Route),
   )
@@ -95,7 +95,7 @@ const PrivateAdminModulesModuleIdIndexRoute =
   PrivateAdminModulesModuleIdIndexRouteImport.update({
     id: '/admin/modules/$moduleId/',
     path: '/admin/modules/$moduleId/',
-    getParentRoute: () => PrivateRouteRoute,
+    getParentRoute: () => PrivateLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_private/admin/modules/$moduleId/index.lazy').then(
       (d) => d.Route,
@@ -128,8 +128,8 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_private': typeof PrivateRouteRouteWithChildren
-  '/_public': typeof PublicRouteRouteWithChildren
+  '/_private': typeof PrivateLayoutRouteWithChildren
+  '/_public': typeof PublicLayoutRouteWithChildren
   '/_private/': typeof PrivateIndexRoute
   '/ranking/': typeof RankingIndexRoute
   '/_private/admin/': typeof PrivateAdminIndexRoute
@@ -183,8 +183,8 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PrivateRouteRoute: typeof PrivateRouteRouteWithChildren
-  PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  PrivateLayoutRoute: typeof PrivateLayoutRouteWithChildren
+  PublicLayoutRoute: typeof PublicLayoutRouteWithChildren
   RankingIndexRoute: typeof RankingIndexRoute
 }
 
@@ -194,14 +194,14 @@ declare module '@tanstack/react-router' {
       id: '/_public'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof PublicRouteRouteImport
+      preLoaderRoute: typeof PublicLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_private': {
       id: '/_private'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof PrivateRouteRouteImport
+      preLoaderRoute: typeof PrivateLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ranking/': {
@@ -216,68 +216,68 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PrivateIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_public/sign-up/': {
       id: '/_public/sign-up/'
       path: '/sign-up'
       fullPath: '/sign-up/'
       preLoaderRoute: typeof PublicSignUpIndexRouteImport
-      parentRoute: typeof PublicRouteRoute
+      parentRoute: typeof PublicLayoutRoute
     }
     '/_public/sign-in/': {
       id: '/_public/sign-in/'
       path: '/sign-in'
       fullPath: '/sign-in/'
       preLoaderRoute: typeof PublicSignInIndexRouteImport
-      parentRoute: typeof PublicRouteRoute
+      parentRoute: typeof PublicLayoutRoute
     }
     '/_private/admin/': {
       id: '/_private/admin/'
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof PrivateAdminIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_private/result/$sessionId/': {
       id: '/_private/result/$sessionId/'
       path: '/result/$sessionId'
       fullPath: '/result/$sessionId/'
       preLoaderRoute: typeof PrivateResultSessionIdIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_private/game/$moduleId/': {
       id: '/_private/game/$moduleId/'
       path: '/game/$moduleId'
       fullPath: '/game/$moduleId/'
       preLoaderRoute: typeof PrivateGameModuleIdIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_private/admin/students/': {
       id: '/_private/admin/students/'
       path: '/admin/students'
       fullPath: '/admin/students/'
       preLoaderRoute: typeof PrivateAdminStudentsIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_private/admin/modules/': {
       id: '/_private/admin/modules/'
       path: '/admin/modules'
       fullPath: '/admin/modules/'
       preLoaderRoute: typeof PrivateAdminModulesIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
     '/_private/admin/modules/$moduleId/': {
       id: '/_private/admin/modules/$moduleId/'
       path: '/admin/modules/$moduleId'
       fullPath: '/admin/modules/$moduleId/'
       preLoaderRoute: typeof PrivateAdminModulesModuleIdIndexRouteImport
-      parentRoute: typeof PrivateRouteRoute
+      parentRoute: typeof PrivateLayoutRoute
     }
   }
 }
 
-interface PrivateRouteRouteChildren {
+interface PrivateLayoutRouteChildren {
   PrivateIndexRoute: typeof PrivateIndexRoute
   PrivateAdminIndexRoute: typeof PrivateAdminIndexRoute
   PrivateAdminModulesIndexRoute: typeof PrivateAdminModulesIndexRoute
@@ -287,7 +287,7 @@ interface PrivateRouteRouteChildren {
   PrivateAdminModulesModuleIdIndexRoute: typeof PrivateAdminModulesModuleIdIndexRoute
 }
 
-const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
+const PrivateLayoutRouteChildren: PrivateLayoutRouteChildren = {
   PrivateIndexRoute: PrivateIndexRoute,
   PrivateAdminIndexRoute: PrivateAdminIndexRoute,
   PrivateAdminModulesIndexRoute: PrivateAdminModulesIndexRoute,
@@ -297,27 +297,27 @@ const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateAdminModulesModuleIdIndexRoute: PrivateAdminModulesModuleIdIndexRoute,
 }
 
-const PrivateRouteRouteWithChildren = PrivateRouteRoute._addFileChildren(
-  PrivateRouteRouteChildren,
+const PrivateLayoutRouteWithChildren = PrivateLayoutRoute._addFileChildren(
+  PrivateLayoutRouteChildren,
 )
 
-interface PublicRouteRouteChildren {
+interface PublicLayoutRouteChildren {
   PublicSignInIndexRoute: typeof PublicSignInIndexRoute
   PublicSignUpIndexRoute: typeof PublicSignUpIndexRoute
 }
 
-const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+const PublicLayoutRouteChildren: PublicLayoutRouteChildren = {
   PublicSignInIndexRoute: PublicSignInIndexRoute,
   PublicSignUpIndexRoute: PublicSignUpIndexRoute,
 }
 
-const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
-  PublicRouteRouteChildren,
+const PublicLayoutRouteWithChildren = PublicLayoutRoute._addFileChildren(
+  PublicLayoutRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  PrivateRouteRoute: PrivateRouteRouteWithChildren,
-  PublicRouteRoute: PublicRouteRouteWithChildren,
+  PrivateLayoutRoute: PrivateLayoutRouteWithChildren,
+  PublicLayoutRoute: PublicLayoutRouteWithChildren,
   RankingIndexRoute: RankingIndexRoute,
 }
 export const routeTree = rootRouteImport

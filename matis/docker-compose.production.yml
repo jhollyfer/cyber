@@ -1,0 +1,97 @@
+name: matis
+
+services:
+  # postgres:
+  #   image: postgres:16-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   volumes:
+  #     - postgres-volume:/var/lib/postgresql/data
+  #   networks:
+  #     - traefik-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 60s
+
+  api:
+    image: ${DOCKER_USERNAME}/matis-api:latest
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      DB_USER: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_NAME}
+      SERVER_URL: https://matis-api.maiyu.com.br
+      CLIENT_URL: https://matis.maiyu.com.br
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      COOKIE_DOMAIN: .maiyu.com.br
+      EMAIL_PROVIDER_PASSWORD: ${EMAIL_PROVIDER_PASSWORD}
+      EMAIL_PROVIDER_USER: ${EMAIL_PROVIDER_USER}
+      EMAIL_PROVIDER_HOST: ${EMAIL_PROVIDER_HOST}
+      EMAIL_PROVIDER_PORT: ${EMAIL_PROVIDER_PORT}
+      ADMINISTRATOR_EMAIL: ${ADMINISTRATOR_EMAIL}
+      ADMINISTRATOR_PASSWORD: ${ADMINISTRATOR_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - storage-api-volume:/app/_storage
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matis-api.rule=Host(`matis-api.maiyu.com.br`)"
+      - "traefik.http.routers.matis-api.entrypoints=websecure"
+      - "traefik.http.routers.matis-api.tls.certresolver=myresolver"
+      - "traefik.http.services.matis-api.loadbalancer.server.port=3000"
+      - "traefik.http.routers.matis-api-http.rule=Host(`matis-api.maiyu.com.br`)"
+      - "traefik.http.routers.matis-api-http.entrypoints=web"
+      - "traefik.http.routers.matis-api-http.middlewares=https-only@file"
+
+  app:
+    image: ${DOCKER_USERNAME}/matis-app:latest
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: https://matis-api.maiyu.com.br
+      NITRO_PORT: 3000
+      NITRO_HOST: 0.0.0.0
+    depends_on:
+      - api
+    networks:
+      - traefik-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matis-app.rule=Host(`matis.maiyu.com.br`)"
+      - "traefik.http.routers.matis-app.entrypoints=websecure"
+      - "traefik.http.routers.matis-app.tls.certresolver=myresolver"
+      - "traefik.http.services.matis-app.loadbalancer.server.port=3000"
+      - "traefik.http.routers.matis-app-http.rule=Host(`matis.maiyu.com.br`)"
+      - "traefik.http.routers.matis-app-http.entrypoints=web"
+      - "traefik.http.routers.matis-app-http.middlewares=https-only@file"
+      - "traefik.http.middlewares.matis-app-headers.headers.customResponseHeaders.Cache-Control=no-cache, no-store, must-revalidate"
+      - "traefik.http.middlewares.matis-app-headers.headers.customResponseHeaders.Pragma=no-cache"
+      - "traefik.http.middlewares.matis-app-headers.headers.customResponseHeaders.Expires=0"
+      - "traefik.http.routers.matis-app.middlewares=matis-app-headers"
+
+volumes:
+  # postgres-volume:
+  #   driver: local
+  storage-api-volume:
+    driver: local
+
+networks:
+  traefik-network:
+    external: true
