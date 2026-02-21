@@ -52,7 +52,7 @@ export default class FindAllRankingUseCase {
           };
         })
         .filter(Boolean)
-        .sort((a, b) => b!.average_nota - a!.average_nota || b!.total_score - a!.total_score) as RankingEntry[];
+        .sort((a, b) => b!.total_score - a!.total_score || b!.average_nota - a!.average_nota || b!.best_streak - a!.best_streak) as RankingEntry[];
 
       return right(ranking);
     } catch (_error) {

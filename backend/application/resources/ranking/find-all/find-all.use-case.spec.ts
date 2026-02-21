@@ -52,7 +52,68 @@ describe('Find All Ranking Use Case', () => {
       if (result.isRight()) {
         expect(result.value).toHaveLength(2);
         expect(result.value[0].name).toBe('Aluno 1');
-        expect(result.value[0].average_nota).toBeGreaterThan(result.value[1].average_nota);
+        expect(result.value[0].total_score).toBeGreaterThan(result.value[1].total_score);
+      }
+    });
+
+    it('deve priorizar pontuação total sobre nota média', async () => {
+      rankingRepository.setStudents([
+        {
+          id: 'user-a',
+          name: 'Aluno A',
+          game_sessions: [
+            {
+              nota: 10,
+              module_id: 'mod-1',
+              correct_answers: 10,
+              total_answered: 10,
+              score: 1000,
+              max_streak: 10,
+            },
+          ],
+        },
+        {
+          id: 'user-b',
+          name: 'Aluno B',
+          game_sessions: [
+            {
+              nota: 9,
+              module_id: 'mod-1',
+              correct_answers: 9,
+              total_answered: 10,
+              score: 900,
+              max_streak: 7,
+            },
+            {
+              nota: 9,
+              module_id: 'mod-2',
+              correct_answers: 9,
+              total_answered: 10,
+              score: 900,
+              max_streak: 8,
+            },
+            {
+              nota: 9,
+              module_id: 'mod-3',
+              correct_answers: 9,
+              total_answered: 10,
+              score: 900,
+              max_streak: 6,
+            },
+          ],
+        },
+      ]);
+
+      const result = await useCase.execute();
+
+      expect(result.isRight()).toBe(true);
+
+      if (result.isRight()) {
+        expect(result.value).toHaveLength(2);
+        expect(result.value[0].name).toBe('Aluno B');
+        expect(result.value[0].total_score).toBe(2700);
+        expect(result.value[1].name).toBe('Aluno A');
+        expect(result.value[1].total_score).toBe(1000);
       }
     });
 
